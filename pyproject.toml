@@ -1,0 +1,82 @@
+[tool.poetry]
+name = "call_ai_grapher"
+version = "0.0.1"
+description = ""
+license = "Proprietary"
+authors = [
+    "Your Name <alberto.villa.manrique@gmail.com>"
+]
+readme = "README.md"
+keywords = []
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Environment :: Other Environment",
+    "Intended Audience :: End Users/Desktop",
+    "Natural Language :: English",
+    "Operating System :: OS Independent"
+]
+include = ["deploy"]
+packages = [
+    { include = "call_ai_grapher" }
+]
+
+[tool.poetry.dependencies]
+python = "~3.9"
+black = "^23.7.0"
+python-dateutil = "^2.8.2"
+types-python-dateutil = "^2.8.19.14"
+pyspark = "^3.4.1"
+pyyaml = "^6.0.1"
+mypy = "^1.5.1"
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = ">= 2.21.0"
+
+[tool.poetry.group.test.dependencies]
+coverage = "^7"
+pytest = "^7"
+
+[tool.poetry.group.build.dependencies]
+python-semantic-release = "^7"
+twine = "< 4"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 120
+
+[tool.isort]
+profile = "black"
+
+[tool.flake8]
+max-line-length = 120
+extend-ignore = "E203, E211, E999, F401, F821, W503"
+exclude = ".git, __pycache__, dist"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+addopts = [
+    "--import-mode=importlib",
+    "--junitxml=junit/test-results.xml"
+]
+
+[tool.coverage.run]
+source = ["call_ai_grapher"]
+omit = ["*__init__*"]
+
+[tool.semantic_release]
+branch = "main"
+version_toml = "pyproject.toml:tool.poetry.version"
+version_source = "commit"
+tag_commit = true
+major_on_zero = false
+commit_parser = "semantic_release.history.emoji_parser"
+upload_to_repository = false
+remove_dist = false
+build_command = "poetry build --format wheel"
+tag_format = "{version}"
+major_emoji = "\U0001F4A5"
+minor_emoji = "\u2728,\U0001F3D7,\u267B\uFE0F,\u26A1,\U0001F47D"
+patch_emoji = ""
