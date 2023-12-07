@@ -1,17 +1,14 @@
 # Introduction
 Improve handwriting using GANS
-
-
-
-# Getting Started
-TODO: Guide users through getting your code up and running on their own system.
-
 ## Project Structure
 
 The main project folder contains the following files and folders:
 
 - **call_ai_grapher/**: All your code goes here. You are free to create packages inside of this directory, for example for data preparation, modeling, or utils. Make sure you create an empty `__init__.py` file inside every package.
-- **data/**: Store your datasets used for testing purposes in the `input/` directory. The outputs of your application should be written to the `output/` directory. All files inside this folder will be ignored by Git.
+- **fakes/**: store fakes images.
+- **handwriting/**: store good handwriting images.
+- **myhandw/**: store personal handwriting images.
+- **gif/**: store gifs files to visualize experiments.
 - **tests/**: In this directory you will write your unit tests. As a best practices, make sure to reflect the same structure as in the `call_ai_grapher/` directory. Prefix module, class and function names with "test" following the.
 - **.gitignore**: Indicates which files and folders shouldn't be added to the Git repository.
 - **.pre-commit-config.yaml**: Used to configure which checks and actions should run before every Git commit.
@@ -36,11 +33,19 @@ Install the pre-commit hooks.
 poetry run pre-commit install
 ```
 
+## Experiments
+
+### Experiment 1
+
+My first experiment consists on improving my "a" handwriting. The first step is to teach generator to create my "a" and then improving it with a better style. In the following gif we can see how the generator learns (upper graph) based on "a" reference used by discriminator (lower graph). A metaphor for how AI and humans can go hand in hand.
+
+![Experiment 1](./gif/evol.gif)
+
 ## Run application
 
-To run your application locally execute the following command.
+To train a neural network.
 ```
-poetry run saz_analytics
+poetry run train
 ```
 
 ## Software dependencies
