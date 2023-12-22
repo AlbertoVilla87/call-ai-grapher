@@ -1,7 +1,9 @@
 import os
+import numpy as np
 import re
 import glob
 import imageio
+import logging
 import torch
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
@@ -16,13 +18,14 @@ class Vision:
         Function for visualizing images: Given a tensor of images, number of images, and
         size per image, plots and prints the images in a uniform grid.
         """
-        image_unflat = image_tensor.detach().cpu().view(-1, *size)
-        image_grid = make_grid(image_unflat[:num_images], nrow=1)
+        image_tensor = (image_tensor + 1) / 2
+        image_unflat = image_tensor.detach().cpu()
+        image_grid = make_grid(image_unflat[:num_images], nrow=5)
         plt.imshow(image_grid.permute(1, 2, 0).squeeze())
         plt.show()
 
     @staticmethod
-    def save_image(image_tensor, real_tensor, out_img, num_images=1, size=(1, 28, 28)):
+    def save_image(image_tensor, real_tensor, out_img, num_images=1):
         """_summary_
 
         :param image_tensor: _description_
@@ -33,20 +36,33 @@ class Vision:
         :type out_img: _type_
         :param num_images: _description_, defaults to 1
         :type num_images: int, optional
-        :param size: _description_, defaults to (1, 28, 28)
+        :param size: _description_,
         :type size: tuple, optional
         """
-        image_unflat = image_tensor.detach().cpu().view(-1, *size)
-        real_unflat = real_tensor.detach().cpu().view(-1, *size)
-        appended_tensor = torch.cat(
-            (
-                image_unflat[:num_images],
-                real_unflat[:num_images],
-            ),
-            dim=0,
-        )
-        image_grid = make_grid(appended_tensor, nrow=1).permute(1, 2, 0).squeeze().numpy()
-        plt.imsave(out_img, image_grid, cmap="gray")
+        try:
+            resize = transforms.Compose(
+                [
+                    transforms.Resize((real_tensor.shape[2], real_tensor.shape[3])),
+                ]
+            )
+            image_tensor = resize(image_tensor)
+            image_unflat = image_tensor.detach().cpu()
+            real_unflat = real_tensor.detach().cpu()
+            appended_tensor = torch.cat(
+                (
+                    image_unflat[:num_images],
+                    real_unflat[:num_images],
+                ),
+                dim=0,
+            )
+            image_grid = make_grid(appended_tensor, nrow=1).permute(1, 2, 0).squeeze().numpy()
+            min_val = np.min(image_grid)
+            max_val = np.max(image_grid)
+            normalized_image = (image_grid - min_val) / (max_val - min_val)
+            plt.imsave(out_img, normalized_image, cmap="gray")
+        except Exception as e:
+            logging.info(e)
+            pass
 
     @staticmethod
     def load_images(dir: str, batch_size: int):
@@ -63,6 +79,7 @@ class Vision:
                 transforms.Resize((28, 28)),
                 transforms.Grayscale(num_output_channels=1),
                 transforms.ToTensor(),
+                transforms.Normalize((0.5,), (0.5,)),
             ]
         )
         dataset = DataLoader(datasets.ImageFolder(root=dir, transform=transform), batch_size=batch_size)
@@ -80,9 +97,9 @@ class Vision:
         files = sorted(files, key=Vision.extract_number)
         chunk = 5
         files = [files[i] for i in range(0, len(files), chunk)]
-        print(files)
         images = [imageio.imread(file) for file in files]
         imageio.mimsave(git_path, images, duration=0.0005, loop=True)
 
     def extract_number(s):
+        s = os.path.basename(s)
         return int(re.search(r"\d+", s).group())
