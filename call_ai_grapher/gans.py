@@ -296,8 +296,6 @@ class Training:
 
             if cur_step == 2000:
                 data = self.data_c
-                disc = Discriminator().to(self.device)
-                disc_opt = torch.optim.Adam(disc.parameters(), lr=self.lr / 100, betas=(self.beta_1, self.beta_2))
 
     @staticmethod
     def get_gen_loss(gen: Generator, disc: Discriminator, num_images: int, z_dim: int, device: str = "cpu") -> float:
