@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "call_ai_grapher"
-version = "0.0.1"
+version = "0.1.1"
 description = ""
 license = "Proprietary"
 authors = [
@@ -32,9 +32,14 @@ torch = "^2.1.0"
 torchvision = "^0.16.0"
 matplotlib = "^3.8.1"
 imageio = "^2.32.0"
+jupyter = "^1.0.0"
+pyzmq = "^25.1.2"
+traitlets = "^5.14.0"
+ipython = "^8.18.1"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = ">= 2.21.0"
+ipykernel = "^6.27.1"
 
 [tool.poetry.group.test.dependencies]
 coverage = "^7"

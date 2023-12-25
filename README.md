@@ -41,6 +41,24 @@ My first experiment consists on improving my "a" handwriting. The first step is 
 
 ![Experiment 1](./gif/evol.gif)
 
+### Experiment 2
+
+Second experiment consists on a Deep Convolutional GAN (DCGAN). Main features:
+
+• Replace any pooling layers with strided convolutions (discriminator) and fractional-strided
+convolutions (generator).<br>
+• Use BatchNorm in both the generator and the discriminator.<br>
+• Remove fully connected hidden layers for deeper architectures.<br>
+• Use ReLU activation in generator for all layers except for the output, which uses Tanh.<br>
+• Use LeakyReLU activation in the discriminator for all layers.<br>
+
+DCGAN uses convolutions which do not depend on the number of pixels on an image. However, the number of channels is important to determine the size of the filters.
+
+We can see a checkerboard when the image passes from poor handwriting to the pretty style one. We could not initialize the discriminator to avoid this.
+
+![Experiment 2](./gif/exp_2.gif)
+
+
 ## Run application
 
 To train a neural network.
@@ -48,6 +66,11 @@ To train a neural network.
 poetry run train
 ```
 
+## Run Jupyter
+
+```
+poetry run jupyter notebook
+```
 ## Software dependencies
 - Install [Poetry](https://python-poetry.org/docs/#installation).
 ## Resources
