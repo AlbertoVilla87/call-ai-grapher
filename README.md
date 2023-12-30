@@ -58,11 +58,16 @@ We can see a checkerboard when the image passes from poor handwriting to the pre
 
 Same GANS model without creating a new Discriminator instance when we change the style. We continue to see a very abrupt jump.
 
+### Experiment 4
+
+We go back to GANS of experiment 1. However, in this case, we have an stability issue. To avoid this, we can apply Wasserstein GAN with Gradient Penalty.
+
 | Experiment | Description | Results | 
 | -------- | -------- | -------- |
 |  1   | GANS with two discriminators | ![Experiment 1](./gif/evol.gif)   |
 |  2   | GANS with convolution and two discriminators |![Experiment 2](./gif/exp_2.gif)   |
 |  3   | GANS with convolution and one discriminator |![Experiment 3](./gif/exp_3.gif)   |
+|  4   | GANS with one discriminator |![Experiment 4](./gif/exp_4.gif)   |
 
 
 
