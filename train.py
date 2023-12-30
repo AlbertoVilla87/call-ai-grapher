@@ -14,7 +14,7 @@ def _main():
 
         corr_dir = "handwriting"
         unc_dir = "myhandw"
-        out_dir = "fakes/experiment_2"
+        out_dir = "fakes/experiment_3"
         n_epochs = 5000
         z_dim = 64
         display_step = 10
