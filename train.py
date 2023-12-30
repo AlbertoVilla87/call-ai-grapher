@@ -19,15 +19,11 @@ def _main():
         z_dim = 64
         display_step = 10
         batch_size = 2
-        lr = 0.005
-        beta_1 = 0.5
-        beta_2 = 0.999
-        data_correct = Vision.load_images(corr_dir, batch_size=2)
-        data_uncorrect = Vision.load_images(unc_dir, batch_size=2)
+        lr = 0.00001
+        data_correct = Vision.load_images(corr_dir, batch_size, image_w, image_h)
+        data_uncorrect = Vision.load_images(unc_dir, batch_size, image_w, image_h)
 
-        trainer = Training(
-            n_epochs, z_dim, display_step, batch_size, lr, beta_1, beta_2, data_correct, data_uncorrect, out_dir
-        )
+        trainer = Training(n_epochs, z_dim, display_step, batch_size, lr, data_correct, data_uncorrect, out_dir)
         trainer.train()
 
     except Exception:
