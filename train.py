@@ -12,11 +12,13 @@ def _main():
     try:
         logging.basicConfig(format="%(asctime)-15s %(levelname)s %(message)s", level=logging.INFO)
 
-        corr_dir = "handwriting"
-        unc_dir = "myhandw"
-        out_dir = "fakes/experiment_3"
-        n_epochs = 5000
-        z_dim = 64
+        corr_dir = "scrivener_words_GloriousFree-dBR6"
+        unc_dir = "scrivener_words_ArianaVioleta-dz2K"
+        out_dir = "fakes/experiment_4"
+        n_epochs = 10000
+        z_dim = 256
+        image_w = 100
+        image_h = 40
         display_step = 10
         batch_size = 2
         lr = 0.00001
