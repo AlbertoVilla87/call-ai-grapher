@@ -19,7 +19,7 @@ def get_noise(n_samples: int, z_dim: int, device: str = "cpu") -> torch.randn:
     :return: _description_
     :rtype: torch.randn
     """
-    return torch.randn(n_samples, z_dim, device=device)
+    return torch.randn(n_samples, z_dim).to(device)
 
 
 class Generator(nn.Module):
@@ -27,18 +27,18 @@ class Generator(nn.Module):
     Generator Class
     """
 
-    def __init__(self, z_dim: int = 10, im_chan: int = 1, hidden_dim: int = 64):
+    def __init__(self, z_dim: int, im_dim: int, hidden_dim: int):
         """
-        :param z_dim: dimension of the noise vector
+        :param z_dim: _description_,
         :type z_dim: int, optional
-        :param im_chan: the number of channels in the images, fitted for the dataset used
-        :type im_chan: int, optional
-        :param hidden_dim: the inner dimension, defaults to 128
+        :param im_dim: _description_,
+        :type im_dim: int, optional
+        :param hidden_dim: _description_,
         :type hidden_dim: int, optional
         """
         super(Generator, self).__init__()
         self.z_dim = z_dim
-        self.im_chan = im_chan
+        self.im_dim = im_dim
         self.hidden_dim = hidden_dim
         self.gen = self.create_nn()
 
@@ -47,12 +47,15 @@ class Generator(nn.Module):
         :return: _description_
         :rtype: nn.Sequential
         """
-        return nn.Sequential(
-            self.make_gen_block(self.z_dim, self.hidden_dim * 4),
-            self.make_gen_block(self.hidden_dim * 4, self.hidden_dim * 2, kernel_size=4, stride=1),
-            self.make_gen_block(self.hidden_dim * 2, self.hidden_dim),
-            self.make_gen_block(self.hidden_dim, self.im_chan, kernel_size=4, final_layer=True),
+        gen = nn.Sequential(
+            Generator.get_generator_block(self.z_dim, self.hidden_dim),
+            Generator.get_generator_block(self.hidden_dim, self.hidden_dim * 2),
+            Generator.get_generator_block(self.hidden_dim * 2, self.hidden_dim * 4),
+            Generator.get_generator_block(self.hidden_dim * 4, self.hidden_dim * 8),
+            nn.Linear(self.hidden_dim * 8, self.im_dim),
+            nn.Sigmoid(),
         )
+        return gen
 
     def forward(self, noise: torch):
         """Given a noise tensor, returns generated images
@@ -61,50 +64,25 @@ class Generator(nn.Module):
         :return: _description_
         :rtype: _type_
         """
-        x = self.unsqueeze_noise(noise)
-        return self.gen(x)
+        return self.gen(noise)
 
-    def unsqueeze_noise(self, noise: torch):
-        """Completing a forward pass of the generate: given a noise tensor,
-        returns a copy of that noise with width and heigh = 1 and channel = z_dim
-        :param noise: _description_
-        :type noise: torch
-        :return: _description_
-        :rtype: _type_
-        """
-        return noise.view(len(noise), self.z_dim, 1, 1)
+    @property
+    def get_gen(self):
+        return self.gen
 
-    def make_gen_block(
-        self,
-        input_channels: int,
-        output_channels: int,
-        kernel_size: int = 3,
-        stride: int = 2,
-        final_layer: bool = False,
-    ) -> torch.nn:
-        """Function for returning a block of the DCGAN
-        :param input_channels: how many channels the input feature representation has
-        :type input_channels: int
-        :param output_channels: how many channels the output feature representation should have
-        :type output_channels: int
-        :param kernel_size: the size of each convolutional filter, equivalent to (kernel_size, kernel_size)
-        :type kernel_size: int
-        :param stride: the stride of the convolution
-        :type stride: int
-        :param final_layer: a boolean, true if it is the final layer and false otherwise
-                      (affects activation and batchnorm), defaults to False
-        :type final_layer: bool, optional
+    @staticmethod
+    def get_generator_block(input_dim: int, output_dim: int) -> torch.nn:
+        """Function for returning a block of the generator's neural network
+           given input and output dimensions
+        :param input_dim: _description_
+        :type input_dim: int
+        :param output_dim: _description_
+        :type output_dim: int
         :return: _description_
         :rtype: torch.nn
         """
-        if not final_layer:
-            return nn.Sequential(
-                nn.ConvTranspose2d(input_channels, output_channels, kernel_size, stride),
-                nn.BatchNorm2d(output_channels),
-                nn.ReLU(inplace=True),
-            )
-        else:  # Final Layer
-            return nn.Sequential(nn.ConvTranspose2d(input_channels, output_channels, kernel_size, stride), nn.Tanh())
+        network = nn.Sequential(nn.Linear(input_dim, output_dim), nn.BatchNorm1d(output_dim), nn.ReLU(inplace=True))
+        return network
 
 
 class Discriminator(nn.Module):
@@ -113,15 +91,15 @@ class Discriminator(nn.Module):
     :type nn: _type_
     """
 
-    def __init__(self, im_chan: int = 1, hidden_dim: int = 16):
+    def __init__(self, im_dim: int, hidden_dim: int):
         """_summary_
-        :param im_chan: the number of channels in the images, fitted for the dataset used, defaults to 784
-        :type im_chan: int, optional
+        :param im_dim: _description_, defaults to 5400
+        :type im_dim: int, optional
         :param hidden_dim: _description_, defaults to 128
         :type hidden_dim: int, optional
         """
         super(Discriminator, self).__init__()
-        self.im_chan = im_chan
+        self.im_dim = im_dim
         self.hidden_dim = hidden_dim
         self.disc = self.create_nn()
 
@@ -131,9 +109,11 @@ class Discriminator(nn.Module):
         :rtype: nn.Sequential
         """
         disc = nn.Sequential(
-            self.make_gen_block(self.im_chan, self.hidden_dim),
-            self.make_gen_block(self.hidden_dim, self.hidden_dim * 2),
-            self.make_gen_block(self.hidden_dim * 2, 1, final_layer=True),
+            Discriminator.get_discriminator_block(self.im_dim, self.hidden_dim * 4),
+            Discriminator.get_discriminator_block(self.hidden_dim * 4, self.hidden_dim * 2),
+            Discriminator.get_discriminator_block(self.hidden_dim * 2, self.hidden_dim),
+            nn.Linear(self.hidden_dim, 1),
+            nn.Sigmoid(),
         )
         return disc
 
@@ -144,46 +124,23 @@ class Discriminator(nn.Module):
         :return: _description_
         :rtype: _type_
         """
-        disc_pred = self.disc(image)
-        return disc_pred.view(len(disc_pred), -1)
+        return self.disc(image)
 
     @property
     def get_disc(self):
         return self.disc
 
-    def make_gen_block(
-        self,
-        input_channels: int,
-        output_channels: int,
-        kernel_size: int = 4,
-        stride: int = 2,
-        final_layer: bool = False,
-    ) -> torch.nn:
-        """Function for returning a block of the DCGAN
-        :param input_channels: how many channels the input feature representation has
-        :type input_channels: int
-        :param output_channels: how many channels the output feature representation should have
-        :type output_channels: int
-        :param kernel_size: the size of each convolutional filter, equivalent to (kernel_size, kernel_size)
-        :type kernel_size: int
-        :param stride: the stride of the convolution
-        :type stride: int
-        :param final_layer: a boolean, true if it is the final layer and false otherwise
-                      (affects activation and batchnorm), defaults to False
-        :type final_layer: bool, optional
-        :return: _description_
-        :rtype: torch.nn
+    @staticmethod
+    def get_discriminator_block(input_dim: int, output_dim: int) -> nn.Sequential:
+        """Discriminator Block
+        :param input_dim: the dimension of the input vector
+        :type input_dim: int
+        :param output: the dimension of the output vector
+        :type output: int
+        :return: a discriminator neural network layer, with a linear transformation
+        :rtype: nn.Sequential
         """
-        if not final_layer:
-            return nn.Sequential(
-                nn.Conv2d(input_channels, output_channels, kernel_size, stride),
-                nn.BatchNorm2d(output_channels),
-                nn.LeakyReLU(negative_slope=0.2, inplace=True),
-            )
-        else:  # Final Layer
-            return nn.Sequential(
-                nn.Conv2d(input_channels, output_channels, kernel_size, stride),
-            )
+        return nn.Sequential(nn.Linear(input_dim, output_dim), nn.LeakyReLU(0.2))
 
 
 class Training:
@@ -197,8 +154,6 @@ class Training:
         display_step: int,
         batch_size: int,
         lr: float,
-        beta_1: float,
-        beta_2: float,
         data_c: DataLoader,
         data_u: DataLoader,
         out_dir: str,
@@ -215,10 +170,6 @@ class Training:
         :type batch_size: int
         :param lr: learning rate
         :type lr: float
-        :param beta_1: parameter control the optimizer's momentum
-        :type beta_1: float
-        :param beta_2: parameter control the optimizer's momentum
-        :type beta_2: float
         :param data: tensors images
         :type data: DataLoader
         :param out_dir: fakes images generated directory
@@ -226,26 +177,26 @@ class Training:
         :param device: device type
         :type device: str
         """
+        self.beta_1 = 0.5
+        self.beta_2 = 0.999
         self.n_epochs = n_epochs
         self.z_dim = z_dim
         self.display_step = display_step
         self.batch_size = batch_size
         self.lr = lr
-        self.beta_1 = beta_1
-        self.beta_2 = beta_2
         self.device = device
         self.data_c = data_c
         self.data_u = data_u
         self.out_dir = out_dir
+        self.im_dim_xyz = Training.get_im_dim(data_c)
+        self.im_dim = self.im_dim_xyz[1] * self.im_dim_xyz[2]
 
     def train(self):
         """_summary_"""
-        gen = Generator(self.z_dim).to(self.device)
+        gen = Generator(self.z_dim, self.im_dim, hidden_dim=500).to(self.device)
         gen_opt = torch.optim.Adam(gen.parameters(), lr=self.lr, betas=(self.beta_1, self.beta_2))
-        disc = Discriminator().to(self.device)
+        disc = Discriminator(im_dim=self.im_dim, hidden_dim=500).to(self.device)
         disc_opt = torch.optim.Adam(disc.parameters(), lr=self.lr, betas=(self.beta_1, self.beta_2))
-        gen = gen.apply(Training.weights_init)
-        disc = disc.apply(Training.weights_init)
         cur_step = 0
         mean_generator_loss = 0
         mean_discriminator_loss = 0
@@ -256,7 +207,7 @@ class Training:
                 cur_batch_size = len(real)
 
                 # Flatten the batch of real images from the dataset
-                real = real.to(self.device)
+                real = real.view(cur_batch_size, -1).to(self.device)
 
                 ### Update discriminator ###
                 # Zero out the gradients before backpropagation
@@ -289,15 +240,13 @@ class Training:
                     )
                     fake_noise = get_noise(cur_batch_size, self.z_dim, device=self.device)
                     fake = gen(fake_noise)
-                    Vision.save_image(fake, real, f"{self.out_dir}/{cur_step}.png")
+                    Vision.save_image(fake, real, f"{self.out_dir}/{cur_step}.png", size=self.im_dim_xyz)
                     mean_generator_loss = 0
                     mean_discriminator_loss = 0
                 cur_step += 1
 
-            if cur_step == 2000:
+            if cur_step == 1000:
                 data = self.data_c
-                disc = Discriminator().to(self.device)
-                disc_opt = torch.optim.Adam(disc.parameters(), lr=self.lr / 100, betas=(self.beta_1, self.beta_2))
 
     @staticmethod
     def get_gen_loss(gen: Generator, disc: Discriminator, num_images: int, z_dim: int, device: str = "cpu") -> float:
@@ -317,7 +266,7 @@ class Training:
         :rtype: float
         """
         noise = get_noise(num_images, z_dim, device=device)
-        gen_op = gen.forward(noise)
+        gen_op = gen(noise)
         disc_op_fake = disc(gen_op)
         gen_loss = Training.CRITERION(disc_op_fake, torch.ones_like(disc_op_fake))
         return gen_loss
@@ -347,9 +296,6 @@ class Training:
         disc_loss = (disc_loss_fake + disc_loss_real) / 2
         return disc_loss
 
-    def weights_init(m):
-        if isinstance(m, nn.Conv2d) or isinstance(m, nn.ConvTranspose2d):
-            torch.nn.init.normal_(m.weight, 0.0, 0.02)
-        if isinstance(m, nn.BatchNorm2d):
-            torch.nn.init.normal_(m.weight, 0.0, 0.02)
-            torch.nn.init.constant_(m.bias, 0)
+    def get_im_dim(data):
+        for real, _ in data:
+            return (real.shape[1], real.shape[2], real.shape[3])
