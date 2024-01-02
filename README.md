@@ -60,7 +60,9 @@ Same GANS model without creating a new Discriminator instance when we change the
 
 ### Experiment 4
 
-We go back to GANS of experiment 1. However, in this case, we have an stability issue. To avoid this, we can apply Wasserstein GAN with Gradient Penalty.
+We go back to GANS of experiment 1. However, in this case, we have an stability issue. When we change the image, The discriminator is unable to distinguish that change and is fooled by the generator. To avoid this, we can apply Wasserstein GAN with Gradient Penalty.
+
+![Experiment 4](./gif/exp_4_losses.png) 
 
 | Experiment | Description | Results | 
 | -------- | -------- | -------- |

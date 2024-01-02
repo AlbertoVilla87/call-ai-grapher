@@ -163,5 +163,7 @@ cython_debug/
 
 fakes
 fonts
+runs
 
-*.png
+fakes/*.png
+scrivener*
