@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "call_ai_grapher"
-version = "0.1.3"
+version = "0.2.3"
 description = ""
 license = "Proprietary"
 authors = [

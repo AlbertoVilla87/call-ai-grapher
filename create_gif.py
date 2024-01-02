@@ -8,8 +8,8 @@ def _main():
     try:
         logging.basicConfig(format="%(asctime)-15s %(levelname)s %(message)s", level=logging.INFO)
 
-        img_dir = "fakes/experiment_3"
-        out_path = "gif/exp_3.gif"
+        img_dir = "fakes/experiment_5"
+        out_path = "gif/exp_5.gif"
 
         Vision.create_gifs(img_dir, out_path)
 

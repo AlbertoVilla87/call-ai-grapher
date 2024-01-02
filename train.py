@@ -15,10 +15,10 @@ def _main():
 
         corr_dir = "scrivener_words_GloriousFree-dBR6"
         unc_dir = "scrivener_words_ArianaVioleta-dz2K"
-        out_dir = "fakes/experiment_4"
+        out_dir = "fakes/experiment_5"
         current_date_time = datetime.datetime.now()
         date_time_str = current_date_time.strftime("%Y-%m-%d_%H-%M-%S")
-        experiment = f"exp_4_{date_time_str}"
+        experiment = f"exp_5_{date_time_str}"
         n_epochs = 2000
         z_dim = 256
         image_w = 100
@@ -27,11 +27,23 @@ def _main():
         batch_size = 2
         lr = 0.00001
         change_img_ref = 1000
+        c_lambda = 10
+        crit_repeats = 5
         data_correct = Vision.load_images(corr_dir, batch_size, image_w, image_h)
         data_uncorrect = Vision.load_images(unc_dir, batch_size, image_w, image_h)
 
         trainer = Training(
-            n_epochs, z_dim, display_step, batch_size, lr, data_correct, data_uncorrect, change_img_ref, out_dir
+            n_epochs,
+            z_dim,
+            display_step,
+            batch_size,
+            lr,
+            c_lambda,
+            crit_repeats,
+            data_correct,
+            data_uncorrect,
+            change_img_ref,
+            out_dir,
         )
         trainer.train(experiment)
 
