@@ -5,10 +5,6 @@ Improve handwriting using GANS
 The main project folder contains the following files and folders:
 
 - **call_ai_grapher/**: All your code goes here. You are free to create packages inside of this directory, for example for data preparation, modeling, or utils. Make sure you create an empty `__init__.py` file inside every package.
-- **fakes/**: store fakes images.
-- **handwriting/**: store good handwriting images.
-- **myhandw/**: store personal handwriting images.
-- **gif/**: store gifs files to visualize experiments.
 - **tests/**: In this directory you will write your unit tests. As a best practices, make sure to reflect the same structure as in the `call_ai_grapher/` directory. Prefix module, class and function names with "test" following the.
 - **.gitignore**: Indicates which files and folders shouldn't be added to the Git repository.
 - **.pre-commit-config.yaml**: Used to configure which checks and actions should run before every Git commit.
@@ -60,7 +56,17 @@ Same GANS model without creating a new Discriminator instance when we change the
 
 ### Experiment 4
 
-We go back to GANS of experiment 1. However, in this case, we have an stability issue. To avoid this, we can apply Wasserstein GAN with Gradient Penalty.
+We go back to GANS of experiment 1. However, in this case, we have a vanishing gradient issue. When we change the image, The discriminator is unable to distinguish that change and is fooled by the generator. To avoid this, we can apply Wasserstein GAN with Gradient Penalty.
+
+![Experiment 4](./gif/exp_4_losses.png) 
+
+### Experiment 5
+
+build a Wasserstein GAN with Gradient Penalty (WGAN-GP) (https://arxiv.org/abs/1701.07875) that solves the vanishing gradient issue with the GANs seen in experiment 4.
+
+![Experiment 5](./gif/exp_5_losses.png)
+
+We can see as the discriminator is able to reduce the losses when picture is changing, providing feedback to generator to adapt the new style. However, we continue to see a lot of noise which could be removed adding to the generator a denoising autoencoder module https://plainenglish.io/blog/denoising-autoencoder-in-pytorch-on-mnist-dataset-a76b8824e57e. We need to analyze why in step 490 the loss discriminator increase and then is constant.
 
 | Experiment | Description | Results | 
 | -------- | -------- | -------- |
@@ -68,6 +74,7 @@ We go back to GANS of experiment 1. However, in this case, we have an stability 
 |  2   | GANS with convolution and two discriminators |![Experiment 2](./gif/exp_2.gif)   |
 |  3   | GANS with convolution and one discriminator |![Experiment 3](./gif/exp_3.gif)   |
 |  4   | GANS with one discriminator |![Experiment 4](./gif/exp_4.gif)   |
+|  5   | GANS with WGAN-GP |![Experiment 5](./gif/exp_5.gif)   |
 
 
 
