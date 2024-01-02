@@ -3,6 +3,7 @@ import logging
 from torch import nn
 from tqdm.auto import tqdm
 from torch.utils.data import DataLoader
+from tensorboardX import SummaryWriter
 
 from call_ai_grapher.vision import Vision
 
@@ -156,26 +157,31 @@ class Training:
         lr: float,
         data_c: DataLoader,
         data_u: DataLoader,
+        change_img_ref: int,
         out_dir: str,
         device: str = "cpu",
     ):
         """_summary_
-        :param n_epochs: the number of times you iterate through the entire dataset when training
+        :param n_epochs: _description_
         :type n_epochs: int
-        :param z_dim: the dimension of the noise vector
+        :param z_dim: _description_
         :type z_dim: int
-        :param display_step: how often to display/visualize the images
+        :param display_step: _description_
         :type display_step: int
-        :param batch_size: the number of images per forward/backward pass
+        :param batch_size: _description_
         :type batch_size: int
-        :param lr: learning rate
+        :param lr: _description_
         :type lr: float
-        :param data: tensors images
-        :type data: DataLoader
-        :param out_dir: fakes images generated directory
+        :param data_c: _description_
+        :type data_c: DataLoader
+        :param data_u: _description_
+        :type data_u: DataLoader
+        :param change_img_ref: _description_
+        :type change_img_ref: int
+        :param out_dir: _description_
         :type out_dir: str
-        :param device: device type
-        :type device: str
+        :param device: _description_, defaults to "cpu"
+        :type device: str, optional
         """
         self.beta_1 = 0.5
         self.beta_2 = 0.999
@@ -190,9 +196,15 @@ class Training:
         self.out_dir = out_dir
         self.im_dim_xyz = Training.get_im_dim(data_c)
         self.im_dim = self.im_dim_xyz[1] * self.im_dim_xyz[2]
+        self.change_img_ref = change_img_ref
 
-    def train(self):
-        """_summary_"""
+    def train(self, experiment: str):
+        """
+        Train GANS
+        :param experiment: _description_
+        :type experiment: str
+        """
+        writer = SummaryWriter(comment="-" + experiment)
         gen = Generator(self.z_dim, self.im_dim, hidden_dim=500).to(self.device)
         gen_opt = torch.optim.Adam(gen.parameters(), lr=self.lr, betas=(self.beta_1, self.beta_2))
         disc = Discriminator(im_dim=self.im_dim, hidden_dim=500).to(self.device)
@@ -235,6 +247,14 @@ class Training:
 
                 ### Visualization code ###
                 if cur_step % self.display_step == 0 and cur_step > 0:
+                    writer.add_scalars(
+                        "LOSS",
+                        {
+                            "mean_discriminator_loss": mean_discriminator_loss,
+                            "mean_generator_loss": mean_generator_loss,
+                        },
+                        global_step=cur_step,
+                    )
                     logging.info(
                         f"Step {cur_step}: Generator loss: {mean_generator_loss}, discriminator loss: {mean_discriminator_loss}"
                     )
@@ -243,10 +263,12 @@ class Training:
                     Vision.save_image(fake, real, f"{self.out_dir}/{cur_step}.png", size=self.im_dim_xyz)
                     mean_generator_loss = 0
                     mean_discriminator_loss = 0
+
                 cur_step += 1
 
-            if cur_step == 1000:
+            if cur_step == self.change_img_ref:
                 data = self.data_c
+        writer.close
 
     @staticmethod
     def get_gen_loss(gen: Generator, disc: Discriminator, num_images: int, z_dim: int, device: str = "cpu") -> float:

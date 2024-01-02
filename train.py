@@ -1,4 +1,5 @@
 import logging
+import datetime
 
 from call_ai_grapher.vision import Vision
 from call_ai_grapher.gans import Training
@@ -15,18 +16,24 @@ def _main():
         corr_dir = "scrivener_words_GloriousFree-dBR6"
         unc_dir = "scrivener_words_ArianaVioleta-dz2K"
         out_dir = "fakes/experiment_4"
-        n_epochs = 10000
+        current_date_time = datetime.datetime.now()
+        date_time_str = current_date_time.strftime("%Y-%m-%d_%H-%M-%S")
+        experiment = f"exp_4_{date_time_str}"
+        n_epochs = 2000
         z_dim = 256
         image_w = 100
         image_h = 40
         display_step = 10
         batch_size = 2
         lr = 0.00001
+        change_img_ref = 1000
         data_correct = Vision.load_images(corr_dir, batch_size, image_w, image_h)
         data_uncorrect = Vision.load_images(unc_dir, batch_size, image_w, image_h)
 
-        trainer = Training(n_epochs, z_dim, display_step, batch_size, lr, data_correct, data_uncorrect, out_dir)
-        trainer.train()
+        trainer = Training(
+            n_epochs, z_dim, display_step, batch_size, lr, data_correct, data_uncorrect, change_img_ref, out_dir
+        )
+        trainer.train(experiment)
 
     except Exception:
         logging.exception("Process failed")
