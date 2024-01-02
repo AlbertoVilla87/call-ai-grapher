@@ -165,4 +165,5 @@ fakes
 fonts
 runs
 
-*.png
+fakes/*.png
+scrivener*
