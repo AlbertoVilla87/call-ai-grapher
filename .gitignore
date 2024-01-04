@@ -164,6 +164,7 @@ cython_debug/
 fakes
 fonts
 runs
+denoise
 
 fakes/*.png
 scrivener*
