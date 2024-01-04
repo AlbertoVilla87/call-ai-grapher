@@ -77,6 +77,15 @@ We can see as the discriminator is able to reduce the losses when picture is cha
 |  5   | GANS with WGAN-GP |![Experiment 5](./gif/exp_5.gif)   |
 
 
+### Experiment 6
+
+Include Autoencoder Denosing.
+
+![Experiment 6](./gif/exp_6_losses.png)
+
+![Experiment 6](./gif/exp_6.gif)
+
+We can observe a high noise removal performance within a few epochs of training. However, the letters 'c' and 'e' are very similar. This might be due to the limited variability of the sample, as only one sample per character is available.
 
 ## Run application
 

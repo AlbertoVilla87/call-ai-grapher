@@ -7,10 +7,13 @@ def _main():
     try:
         logging.basicConfig(format="%(asctime)-15s %(levelname)s %(message)s", level=logging.INFO)
 
-        path_font = "believe-it-font/BelieveIt-DvLE.ttf"
+        out_font = "fonts/glorious-free-font/GloriousFree-dBR6.ttf"
         font_size = 40
 
-        Scrivener.generate_text("hello word", path_font, font_size)
+        words = ["a", "b", "c", "d", "e", "f", "g", "h", "i"]
+
+        for word in words:
+            Scrivener.generate_text(word, out_font, font_size)
 
     except Exception:
         logging.exception("Process failed")

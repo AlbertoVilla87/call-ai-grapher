@@ -17,11 +17,10 @@ class Scrivener:
         :type size_image: int
         """
         reader = OCR()
-        path_font = f"fonts/{font_style}"
         size_image = (1, 1)
         image = Image.new("RGB", size_image, color="white")
         draw = ImageDraw.Draw(image)
-        font = ImageFont.truetype(path_font, font_size)
+        font = ImageFont.truetype(font_style, font_size)
         _, _, w, h = draw.textbbox((0, 0), text, font=font)
         image = Image.new("RGB", (w, font_size), color="white")
         draw = ImageDraw.Draw(image)
@@ -29,9 +28,9 @@ class Scrivener:
         out_path = Scrivener.create_path(text, font_style)
         image.save(out_path)
         text_info = reader.info_text_from_image(out_path)
-        delta_w = text_info[ocr.BOTTOM_RIGHT][0] - w
-        image.crop((0, 0, w - delta_w, h)).save(out_path)
-        print(text_info)
+        if text_info:
+            delta_w = text_info[ocr.BOTTOM_RIGHT][0] - w
+            image.crop((0, 0, w - delta_w, h)).save(out_path)
         return out_path
 
     @staticmethod
@@ -48,5 +47,5 @@ class Scrivener:
         if not os.path.exists(f"scrivener_words_{style}"):
             os.makedirs(f"scrivener_words_{style}")
             os.makedirs(f"scrivener_words_{style}/images")
-        path = f"scrivener_words_{style}/images/{text}_{style}.png"
+        path = f"scrivener_words_{style}/images/{text}.png"
         return path

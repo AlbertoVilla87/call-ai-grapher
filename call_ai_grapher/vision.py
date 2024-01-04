@@ -3,6 +3,7 @@ import re
 import glob
 import imageio
 import torch
+import numpy as np
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
 from torchvision.utils import make_grid
@@ -90,6 +91,83 @@ class Vision:
         images = [imageio.imread(file) for file in files]
         imageio.mimsave(git_path, images, duration=0.0005, loop=True)
 
+    @staticmethod
     def extract_number(s):
         s = os.path.basename(s)
         return int(re.search(r"\d+", s).group())
+
+    @staticmethod
+    def plot_ae_outputs_den(
+        dataset: DataLoader,
+        encoder,
+        decoder,
+        device: str,
+        out_img_path: str,
+        n_ims_display: int = 10,
+        noise_factor: float = 0.3,
+    ):
+        """_summary_
+        :param dataset: _description_
+        :type dataset: DataLoader
+        :param encoder: _description_
+        :type encoder: _type_
+        :param decoder: _description_
+        :type decoder: _type_
+        :param device: _description_
+        :type device: str
+        :param out_img_path: _description_
+        :type out_img_path: str
+        :param n_ims_display: _description_, defaults to 10
+        :type n_ims_display: int, optional
+        :param noise_factor: _description_, defaults to 0.3
+        :type noise_factor: float, optional
+        """
+        plt.figure(figsize=(16, 4.5))
+        i = 0
+        for img, _ in dataset:
+            ax = plt.subplot(3, n_ims_display, i + 1)
+            image_noisy = Vision.add_noise(img, noise_factor)
+            image_noisy = image_noisy.to(device)
+
+            encoder.eval()
+            decoder.eval()
+
+            with torch.no_grad():
+                rec_img = decoder(encoder(image_noisy))
+
+            plt.imshow(img.cpu().squeeze().numpy(), cmap="gist_gray")
+            ax.get_xaxis().set_visible(False)
+            ax.get_yaxis().set_visible(False)
+            if i == n_ims_display // 2:
+                ax.set_title("Original images")
+            ax = plt.subplot(3, n_ims_display, i + 1 + n_ims_display)
+            plt.imshow(image_noisy.cpu().squeeze().numpy(), cmap="gist_gray")
+            ax.get_xaxis().set_visible(False)
+            ax.get_yaxis().set_visible(False)
+            if i == n_ims_display // 2:
+                ax.set_title("Corrupted images")
+
+            ax = plt.subplot(3, n_ims_display, i + 1 + n_ims_display + n_ims_display)
+            plt.imshow(rec_img.cpu().squeeze().numpy(), cmap="gist_gray")
+            ax.get_xaxis().set_visible(False)
+            ax.get_yaxis().set_visible(False)
+            if i == n_ims_display // 2:
+                ax.set_title("Reconstructed images")
+            i += 1
+        plt.subplots_adjust(left=0.1, bottom=0.1, right=0.7, top=0.9, wspace=0.3, hspace=0.3)
+        plt.savefig(out_img_path)
+
+    @staticmethod
+    def add_noise(inputs: torch, noise_factor: float = 0.3):
+        """
+        Add noise to the images
+        :param inputs: images
+        :type inputs: torch
+        :param noise_factor: _description_, defaults to 0.3
+        :type noise_factor: float, optional
+        :return: _description_
+        :rtype: _type_
+        """
+        noisy = inputs + torch.randn_like(inputs) * noise_factor
+        noisy = torch.clip(noisy, 0.0, 1.0)
+        return noisy
