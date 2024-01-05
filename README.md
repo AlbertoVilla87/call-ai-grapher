@@ -1,34 +1,5 @@
 # Introduction
 Improve handwriting using GANS
-## Project Structure
-
-The main project folder contains the following files and folders:
-
-- **call_ai_grapher/**: All your code goes here. You are free to create packages inside of this directory, for example for data preparation, modeling, or utils. Make sure you create an empty `__init__.py` file inside every package.
-- **tests/**: In this directory you will write your unit tests. As a best practices, make sure to reflect the same structure as in the `call_ai_grapher/` directory. Prefix module, class and function names with "test" following the.
-- **.gitignore**: Indicates which files and folders shouldn't be added to the Git repository.
-- **.pre-commit-config.yaml**: Used to configure which checks and actions should run before every Git commit.
-- **.python-version**: File where `pyenv` stores the Python version used by the project.
-- **build-pipeline.yml**: Azure DevOps Pipeline for building the project.
-- **CHANGELOG.md**: Automatic generated file when a new build has been created.
-- **poetry.lock**: File used by `poetry` to fix the versions of the packages used in this project.
-- **pyproject.toml**: Contains all the configuration for the entire project. It replaces `setup.py`, `requirements.txt`, and package-specific configuration files.
-
-
-## Installation process
-
-Install all the dependencies. Also creates the virtual environment if it didn't exist yet.
-```
-poetry install
-```
-
-_If the installation fails you are probably missing the required Python version. Find the required version by running `pyenv version`, and then install it by running `pyenv install x.y.z`, where x.y.z should be replaced with the version number. Depending on your internet connection and your machine the installation can take a few minutes._
-
-Install the pre-commit hooks.
-```
-poetry run pre-commit install
-```
-
 ## Experiments
 
 ### Experiment 1
@@ -87,14 +58,101 @@ Include Autoencoder Denosing.
 
 We can observe a high noise removal performance within a few epochs of training. However, the letters 'c' and 'e' are very similar. This might be due to the limited variability of the sample, as only one sample per character is available.
 
-## Run application
+## Project Structure
 
-To train a neural network.
+The main project folder contains the following files and folders:
+
+```bash
+pycache__
+├── call_ai_grapher
+│   ├── __pycache__
+│   └── notebook
+├── config
+├── denoise
+│   └── experiment_6
+├── fakes
+│   ├── experiment_1
+│   ├── experiment_2
+│   ├── experiment_3
+│   ├── experiment_4
+│   └── experiment_5
+├── fonts
+│   ├── ariana-violeta-font
+│   ├── believe-it-font
+│   ├── glorious-free-font
+│   └── winter-song-font
+├── fonts_samples
+│   ├── scrivener_words_ArianaVioleta-dz2K
+│   │   └── images
+│   ├── scrivener_words_BelieveIt-DvLE
+│   │   └── images
+│   └── scrivener_words_GloriousFree-dBR6
+│       └── images
+├── gif
+├── handwriting
+│   └── images
+├── myhandw
+│   └── images
+└── runs
+    ├── Jan02_10-51-48_MCCA-DCG46M0G6N-exp_4_2024-01-02_10-51-48
+    ├── Jan02_11-00-46_MCCA-DCG46M0G6N-exp_4_2024-01-02_11-00-46
+    ├── Jan02_11-02-49_MCCA-DCG46M0G6N-exp_4_2024-01-02_11-02-49
+    ├── Jan02_11-10-56_MCCA-DCG46M0G6N-exp_4_2024-01-02_11-10-56
+    ├── Jan02_11-12-18_MCCA-DCG46M0G6N-exp_4_2024-01-02_11-12-18
+    ├── Jan02_11-19-26_MCCA-DCG46M0G6N-exp_4_2024-01-02_11-19-26
+    ├── Jan02_11-19-45_MCCA-DCG46M0G6N-exp_4_2024-01-02_11-19-45
+    │   └── LOSS
+    │       ├── mean_discriminator_loss
+    │       └── mean_generator_loss
+    ├── Jan02_11-21-34_MCCA-DCG46M0G6N-exp_4_2024-01-02_11-21-34
+    │   └── LOSS
+    │       ├── mean_discriminator_loss
+    │       └── mean_generator_loss
+    ├── Jan02_12-39-09_MCCA-DCG46M0G6N-exp_5_2024-01-02_12-39-09
+    ├── Jan02_12-40-28_MCCA-DCG46M0G6N-exp_5_2024-01-02_12-40-28
+    │   └── LOSS
+    │       ├── mean_discriminator_loss
+    │       └── mean_generator_loss
+    ├── Jan04_18-30-27_MCCA-DCG46M0G6N-exp_6_2024-01-04_18-30-27
+    │   └── LOSS
+    │       ├── train_loss
+    │       └── val_loss
+    ├── Jan05_16-45-38_MCCA-DCG46M0G6N-exp_5_2024-01-05_16-45-38
+    │   └── LOSS
+    │       ├── mean_discriminator_loss
+    │       └── mean_generator_loss
+    ├── Jan05_16-57-47_MCCA-DCG46M0G6N-exp_5_2024-01-05_16-57-47
+    │   └── LOSS
+    │       ├── mean_discriminator_loss
+    │       └── mean_generator_loss
+    └── Jan05_17-02-25_MCCA-DCG46M0G6N-exp_5_2024-01-05_17-02-25
 ```
-poetry run train
+## Installation process
+
+Install all the dependencies. Also creates the virtual environment if it didn't exist yet.
+```
+poetry install
 ```
 
-## Run Jupyter
+_If the installation fails you are probably missing the required Python version. Find the required version by running `pyenv version`, and then install it by running `pyenv install x.y.z`, where x.y.z should be replaced with the version number. Depending on your internet connection and your machine the installation can take a few minutes._
+
+Install the pre-commit hooks.
+```
+poetry run pre-commit install
+```
+## Run Gans Training
+
+```
+poetry run python -m train
+```
+
+## Run Autoencoder Denoising
+
+```
+poetry run python -m denoise
+```
+
+## Run Jupyter (FYI)
 
 ```
 poetry run jupyter notebook
