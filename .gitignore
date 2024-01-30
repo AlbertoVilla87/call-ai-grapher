@@ -167,4 +167,5 @@ runs
 denoise
 
 fakes/*.png
+documents/*
 scrivener*
