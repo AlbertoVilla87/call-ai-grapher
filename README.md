@@ -33,7 +33,7 @@ We go back to GANS of experiment 1. However, in this case, we have a vanishing g
 
 ### Experiment 5
 
-build a Wasserstein GAN with Gradient Penalty (WGAN-GP) (https://arxiv.org/abs/1701.07875) that solves the vanishing gradient issue with the GANs seen in experiment 4.
+Build a Wasserstein GAN with Gradient Penalty (WGAN-GP) (https://arxiv.org/abs/1701.07875, https://arxiv.org/pdf/1704.00028.pdf, https://lilianweng.github.io/posts/2017-08-20-gan/) that solves the vanishing gradient issue with the GANs seen in experiment 4.
 
 ![Experiment 5](./gif/exp_5_losses.png)
 
@@ -58,6 +58,17 @@ Include Autoencoder Denosing.
 
 We can observe a high noise removal performance within a few epochs of training. However, the letters 'c' and 'e' are very similar. This might be due to the limited variability of the sample, as only one sample per character is available.
 
+### Experiment 7
+
+We research about object detection. We discover an important part before detection: region proposals. **Region proposal** is a technique that helps in identifying islands of regions where the pixels are similar to one another. *SelectSearch* is a region proposal algorithm used for object localization where it generates proposals of regions that are likely to be grouped together based on their pixel intensitites. However, our case is simpler and we can apply the following technique:
+
+https://stackoverflow.com/questions/40443988/python-opencv-ocr-image-segmentation
+
+
+<img src="./gif/exp_7.jpeg" alt="Experiment 7" width="500" />
+
+We can see a high level character recognition but we still seeing areas with multiple characters. Therefore, Object Detection with RNN is needed. 
+
 ## Project Structure
 
 The main project folder contains the following files and folders:
@@ -70,6 +81,8 @@ pycache__
 ├── config
 ├── denoise
 │   └── experiment_6
+├── documents
+│   └── experiment_7
 ├── fakes
 │   ├── experiment_1
 │   ├── experiment_2
@@ -198,3 +211,6 @@ Please activate the virtual environment by using `poetry shell` before running t
 # Contribute
 
 Read [here](./CONTRIBUTING.md) how you can contribute to make our code better.
+
+
+https://github.com/clovaai/CRAFT-pytorch?tab=readme-ov-file
