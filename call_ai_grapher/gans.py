@@ -24,18 +24,16 @@ def get_noise(n_samples: int, z_dim: int, device: str = "cpu") -> torch.randn:
 
 
 class Generator(nn.Module):
-    """
-    Generator Class
-    """
 
     def __init__(self, z_dim: int, im_dim: int, hidden_dim: int):
         """
-        :param z_dim: _description_,
-        :type z_dim: int, optional
-        :param im_dim: _description_,
-        :type im_dim: int, optional
-        :param hidden_dim: _description_,
-        :type hidden_dim: int, optional
+        Generator class
+
+        Args:
+            z_dim (int): the dimension of the noise vector, a scalar
+            im_dim (int): the number of channels in the images, fitted for the dataset used, a scalar
+              (MNIST is black-and-white, so 1 channel is your default)
+            hidden_dim (int): the inner dimension, a scalar
         """
         super(Generator, self).__init__()
         self.z_dim = z_dim
@@ -44,9 +42,11 @@ class Generator(nn.Module):
         self.gen = self.create_nn()
 
     def create_nn(self) -> nn.Sequential:
-        """_summary_
-        :return: _description_
-        :rtype: nn.Sequential
+        """
+        Build the neural network
+
+        Returns:
+            nn.Sequential: network
         """
         gen = nn.Sequential(
             Generator.get_generator_block(self.z_dim, self.hidden_dim),
@@ -59,11 +59,14 @@ class Generator(nn.Module):
         return gen
 
     def forward(self, noise: torch):
-        """Given a noise tensor, returns generated images
-        :param noise: a noise tensor with dimensions (n_samples, z_dim)
-        :type noise: torch
-        :return: _description_
-        :rtype: _type_
+        """
+        Given a noise tensor, returns generated images
+
+        Args:
+            noise (torch): _description_
+
+        Returns:
+            _type_: _description_
         """
         return self.gen(noise)
 
@@ -73,31 +76,35 @@ class Generator(nn.Module):
 
     @staticmethod
     def get_generator_block(input_dim: int, output_dim: int) -> torch.nn:
-        """Function for returning a block of the generator's neural network
-           given input and output dimensions
-        :param input_dim: _description_
-        :type input_dim: int
-        :param output_dim: _description_
-        :type output_dim: int
-        :return: _description_
-        :rtype: torch.nn
         """
-        network = nn.Sequential(nn.Linear(input_dim, output_dim), nn.BatchNorm1d(output_dim), nn.ReLU(inplace=True))
+        Function for returning a block of the generator's neural network
+        given input and output dimensions
+
+        Args:
+            input_dim (int): _description_
+            output_dim (int): _description_
+
+        Returns:
+            torch.nn: _description_
+        """
+        network = nn.Sequential(
+            nn.Linear(input_dim, output_dim),
+            nn.BatchNorm1d(output_dim),
+            nn.ReLU(inplace=True),
+        )
         return network
 
 
 class Discriminator(nn.Module):
-    """Discrimator Class
-    :param nn: _description_
-    :type nn: _type_
-    """
 
     def __init__(self, im_dim: int, hidden_dim: int):
-        """_summary_
-        :param im_dim: _description_, defaults to 5400
-        :type im_dim: int, optional
-        :param hidden_dim: _description_, defaults to 128
-        :type hidden_dim: int, optional
+        """
+        Discriminator Class
+
+        Args:
+            im_dim (int): the number of channels in the images, fitted for the dataset used, a scalar
+              (MNIST is black-and-white, so 1 channel is your default)
+            hidden_dim (int): the inner dimension, a scalar
         """
         super(Discriminator, self).__init__()
         self.im_dim = im_dim
@@ -105,9 +112,11 @@ class Discriminator(nn.Module):
         self.disc = self.create_nn()
 
     def create_nn(self) -> nn.Sequential:
-        """_summary_
-        :return: _description_
-        :rtype: nn.Sequential
+        """
+        Build the neural network
+
+        Returns:
+            nn.Sequential: network
         """
         disc = nn.Sequential(
             Discriminator.get_discriminator_block(self.im_dim, self.hidden_dim * 4),
@@ -119,11 +128,15 @@ class Discriminator(nn.Module):
         return disc
 
     def forward(self, image: torch):
-        """Given an image tensor, returns a 1-dimension tensor representing fake/real
-        :param noise: a noise tensor with dimensions (n_samples, z_dim)
-        :type image: image tensor
-        :return: _description_
-        :rtype: _type_
+        """
+        Function for completing a forward pass of the discriminator: Given an image tensor,
+        returns a 1-dimension tensor representing fake/real.
+
+        Args:
+            image (torch): a flattened image tensor with dimension (im_dim)
+
+        Returns:
+            _type_: _description_
         """
         return self.disc(image)
 
@@ -133,13 +146,15 @@ class Discriminator(nn.Module):
 
     @staticmethod
     def get_discriminator_block(input_dim: int, output_dim: int) -> nn.Sequential:
-        """Discriminator Block
-        :param input_dim: the dimension of the input vector
-        :type input_dim: int
-        :param output: the dimension of the output vector
-        :type output: int
-        :return: a discriminator neural network layer, with a linear transformation
-        :rtype: nn.Sequential
+        """
+        Return a sequence of operations corresponding to a discriminator block of DCGAN
+
+        Args:
+            input_dim (int): _description_
+            output_dim (int): _description_
+
+        Returns:
+            nn.Sequential: _description_
         """
         return nn.Sequential(nn.Linear(input_dim, output_dim), nn.LeakyReLU(0.2))
 
@@ -147,17 +162,17 @@ class Discriminator(nn.Module):
 class WGANGP:
     @staticmethod
     def get_gradient(crit: Discriminator, real: torch, fake: torch, epsilon: float) -> float:
-        """Return the gradient of the discriminator's scores with respect to mixes of real and fake images
-        :param crit: the discriminator model
-        :type crit: Discriminator
-        :param real: a batch of real images
-        :type real: torch
-        :param fake: a batch of real fakes
-        :type fake: torch
-        :param epsilon: a vector of the uniformly random proportions of real/fake per mixed image
-        :type epsilon: float
-        :return: the gradient of the critic's scores, with respect to the mixed image
-        :rtype: float
+        """
+        Return the gradient of the discriminator's scores with respect to mixes of real and fake images
+
+        Args:
+            crit (Discriminator): the discriminator model
+            real (torch): a batch of real images
+            fake (torch): a batch of fake images
+            epsilon (float): a vector of the uniformly random proportions of real/fake per mixed image
+
+        Returns:
+            float: the gradient of the critic's scores, with respect to the mixed image
         """
         # Mix the images together
         mixed_images = real * epsilon + fake * (1 - epsilon)
@@ -181,16 +196,18 @@ class WGANGP:
 
     @staticmethod
     def gradient_penalty(gradient: float) -> float:
-        """Return the gradient penalty, given a gradient. Given a batch of image gradients,
-        you calculate the magnitude of eadh image's gradient and penalize the mean quadratic
-        distance of each magnitude to 1
-        :param gradient: the gradient of the discriminator's scores, with respect to the
-        mixed image
-        :type gradient: float
-        :return: the gradient penalty
-        :rtype: float
         """
-        # Flatten the gradients so that each row captures one image
+        Return the gradient penalty, given a gradient. Given a batch of image gradients,
+        you calculate the magnitude of each image's gradient and penalize the mean quadratic
+        distance of each magnitude to 1
+
+        Args:
+            gradient (float): the gradient of the discriminator's scores, with respect to the
+        mixed image
+
+        Returns:
+            float: the gradient penalty
+        """
         gradient = gradient.view(len(gradient), -1)
         # Calculate the magnitude of every row
         gradient_norm = gradient.norm(2, dim=1)
@@ -218,31 +235,22 @@ class Training:
         out_dir: str,
         device: str = "cpu",
     ):
-        """_summary_
-        :param n_epochs: _description_
-        :type n_epochs: int
-        :param z_dim: _description_
-        :type z_dim: int
-        :param display_step: _description_
-        :type display_step: int
-        :param batch_size: _description_
-        :type batch_size: int
-        :param lr: _description_
-        :type lr: float
-        :param c_lambda: _description_
-        :type c_lambda: int
-        :param crit_repeats: _description_
-        :type crit_repeats: int
-        :param data_c: _description_
-        :type data_c: DataLoader
-        :param data_u: _description_
-        :type data_u: DataLoader
-        :param change_img_ref: _description_
-        :type change_img_ref: int
-        :param out_dir: _description_
-        :type out_dir: str
-        :param device: _description_, defaults to "cpu"
-        :type device: str, optional
+        """
+        Training GANs
+
+        Args:
+            n_epochs (int): number of epochs
+            z_dim (int): dimension of noise vector
+            display_step (int): how often to display/visualize the images
+            batch_size (int): the number of images per forward/backward pass
+            lr (float): learning rate
+            c_lambda (int): _description_
+            crit_repeats (int): _description_
+            data_c (DataLoader): machine-encoded alphabet
+            data_u (DataLoader): handwriting alphabet
+            change_img_ref (int): change reference iteration
+            out_dir (str): output directory
+            device (str, optional): _description_. Defaults to "cpu".
         """
         self.beta_1 = 0.5
         self.beta_2 = 0.999
@@ -264,8 +272,9 @@ class Training:
     def train(self, experiment: str):
         """
         Train GANS
-        :param experiment: _description_
-        :type experiment: str
+
+        Args:
+            experiment (str): name of experiment
         """
         writer = SummaryWriter(comment="-" + experiment)
         gen = Generator(self.z_dim, self.im_dim, hidden_dim=500).to(self.device)
@@ -329,20 +338,19 @@ class Training:
 
     @staticmethod
     def get_gen_loss(gen: Generator, disc: Discriminator, num_images: int, z_dim: int, device: str = "cpu") -> float:
-        """Return the loss of the generator given inputs
-        :param gen: generator model, withc returns an image given z-dimensional noise
-        :type gen: Generator
-        :param disc: discriminator model, which returns a single-dimensional prediction of real/fake
-        :type disc: Discriminator
-        :param num_images: the number of images the generated should produce,
-        which is also the lenght of the real images
-        :type num_images: int
-        :param z_dim: the dimension of the noise vector
-        :type z_dim: int
-        :param device: the device type, defaults to "cpu"
-        :type device: str, optional
-        :return: _description_
-        :rtype: float
+        """
+        Loss of the generator given inputs
+
+        Args:
+            gen (Generator): generator model, with returns an image given z-dimensional noise
+            disc (Discriminator): discriminator model, which returns a single-dimensional prediction of real/fake
+            num_images (int): the number of images the generated should produce,
+            which is also the length of the real images
+            z_dim (int): the dimension of the noise vector
+            device (str, optional): _description_. Defaults to "cpu".
+
+        Returns:
+            float: _description_
         """
         noise = get_noise(num_images, z_dim, device=device)
         gen_op = gen(noise)
@@ -354,23 +362,20 @@ class Training:
     def get_disc_loss(
         gen: Generator, disc: Discriminator, c_lambda: int, real: list, num_images: int, z_dim: int, device: str
     ):
-        """Return the loss of the discriminator given inputs.
-        :param gen: _description_
-        :type gen: Generator
-        :param disc: _description_
-        :type disc: Discriminator
-        :param c_lambda: _description_
-        :type c_lambda: int
-        :param real: _description_
-        :type real: list
-        :param num_images: _description_
-        :type num_images: int
-        :param z_dim: _description_
-        :type z_dim: int
-        :param device: _description_
-        :type device: str
-        :return: _description_
-        :rtype: _type_
+        """
+        Return the loss of the discriminator given inputs.
+
+        Args:
+            gen (Generator): _description_
+            disc (Discriminator): _description_
+            c_lambda (int): _description_
+            real (list): _description_
+            num_images (int): number of images
+            z_dim (int): the dimension of the noise vector
+            device (str): _description_
+
+        Returns:
+            _type_: _description_
         """
         epsilon = torch.rand(len(real), 1, 1, 1, device=device, requires_grad=True)
         noise = get_noise(num_images, z_dim, device=device)

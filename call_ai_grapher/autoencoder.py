@@ -11,9 +11,11 @@ from call_ai_grapher.vision import Vision
 
 class Encoder(nn.Module):
     def __init__(self, encoded_space_dim: int):
-        """_summary_
-        :param encoded_space_dim: _description_
-        :type encoded_space_dim: int
+        """
+        Initializes the Encoder module.
+
+        Args:
+            encoded_space_dim (int): The dimensionality of the encoded space.
         """
         super(Encoder, self).__init__()
         self.encoded_space_dim = encoded_space_dim
@@ -31,11 +33,13 @@ class Encoder(nn.Module):
         self.encoder_lin = nn.Sequential(nn.Linear(3 * 3 * 32, 128), nn.ReLU(True), nn.Linear(128, encoded_space_dim))
 
     def forward(self, image: torch):
-        """_summary_
-        :param image: _description_
-        :type image: torch
-        :return: _description_
-        :rtype: _type_
+        """Forward pass through the Encoder.
+
+        Args:
+            image (torch.Tensor): The input image.
+
+        Returns:
+            torch.Tensor: The encoded representation of the input image.
         """
         out = self.encoder_cnn(image)
         out = self.flatten(out)
@@ -45,9 +49,10 @@ class Encoder(nn.Module):
 
 class Decoder(nn.Module):
     def __init__(self, encoded_space_dim: int):
-        """_summary_
-        :param encoded_space_dim: _description_
-        :type encoded_space_dim: int
+        """Initializes the Decoder module.
+
+        Args:
+            encoded_space_dim (int): The dimensionality of the encoded space.
         """
         super(Decoder, self).__init__()
         self.encoded_space_dim = encoded_space_dim
@@ -69,11 +74,13 @@ class Decoder(nn.Module):
         )
 
     def forward(self, x):
-        """_summary_
-        :param x: _description_
-        :type x: _type_
-        :return: _description_
-        :rtype: _type_
+        """Forward pass through the Decoder.
+
+        Args:
+            x (torch.Tensor): The input tensor.
+
+        Returns:
+            torch.Tensor: The reconstructed output tensor.
         """
         x = self.decoder_lin(x)
         x = self.unflatten(x)
@@ -98,23 +105,19 @@ class Training:
         out_dir: str,
         device: str = "cpu",
     ):
-        """_summary_
-        :param train_loader: _description_
-        :type train_loader: DataLoader
-        :param val_loader: _description_
-        :type val_loader: DataLoader
-        :param test_loader: _description_
-        :type test_loader: DataLoader
-        :param n_epochs: _description_
-        :type n_epochs: int
-        :param lr: _description_
-        :type lr: float
-        :param encoded_space_dim: _description_
-        :type encoded_space_dim: int
-        :param noise_factor: _description_
-        :type noise_factor: float
-        :param device: _description_, defaults to "cpu"
-        :type device: str, optional
+        """
+        Initializes the Training module.
+
+        Args:
+            train_loader (DataLoader): train data
+            val_loader (DataLoader): validation data
+            test_loader (DataLoader): test data
+            n_epochs (int): number of epochs
+            lr (float): loss rate
+            encoded_space_dim (int): dimension encoded vector
+            noise_factor (float): _description_
+            out_dir (str): output directory
+            device (str, optional): _description_. Defaults to "cpu".
         """
         self.train_loader = train_loader
         self.valid_loader = val_loader
@@ -131,8 +134,9 @@ class Training:
     def train(self, experiment: str):
         """
         Train Autoencoder
-        :param experiment: _description_
-        :type experiment: str
+
+        Args:
+            experiment (str): name of experiment
         """
         writer = SummaryWriter(comment="-" + experiment)
         encoder = Encoder(encoded_space_dim=self.encoded_space_dim)
@@ -195,6 +199,23 @@ class Training:
 
     @staticmethod
     def train_epoch_den(encoder, decoder, device, dataloader, loss_fn, optimizer, noise_factor=0.3):
+        """
+        _summary_
+
+        _extended_summary_
+
+        Args:
+            encoder (_type_): _description_
+            decoder (_type_): _description_
+            device (_type_): _description_
+            dataloader (_type_): _description_
+            loss_fn (_type_): _description_
+            optimizer (_type_): _description_
+            noise_factor (float, optional): _description_. Defaults to 0.3.
+
+        Returns:
+            _type_: _description_
+        """
         # Set train mode for both the encoder and the decoder
         encoder.train()
         decoder.train()
@@ -226,6 +247,22 @@ class Training:
         return np.mean(train_loss)
 
     def test_epoch_den(encoder, decoder, device, dataloader, loss_fn, noise_factor=0.3):
+        """
+        _summary_
+
+        _extended_summary_
+
+        Args:
+            encoder (_type_): _description_
+            decoder (_type_): _description_
+            device (_type_): _description_
+            dataloader (_type_): _description_
+            loss_fn (_type_): _description_
+            noise_factor (float, optional): _description_. Defaults to 0.3.
+
+        Returns:
+            _type_: _description_
+        """
         # Set evaluation mode for encoder and decoder
         encoder.eval()
         decoder.eval()
@@ -253,5 +290,16 @@ class Training:
 
     @staticmethod
     def get_im_dim(data):
+        """
+        _summary_
+
+        _extended_summary_
+
+        Args:
+            data (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
         for real, _ in data:
             return real.shape[2] * real.shape[3]

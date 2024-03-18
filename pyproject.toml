@@ -22,7 +22,7 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "~3.9"
-black = "^23.7.0"
+black = { version = "24.2.0", extras = ["jupyter"] }
 python-dateutil = "^2.8.2"
 types-python-dateutil = "^2.8.19.14"
 pyspark = "^3.4.1"
@@ -42,17 +42,45 @@ tensorboardx = "^2.6.2.2"
 tensorboard = "^2.15.1"
 selectivesearch = "^0.4"
 torch-snippets = "^0.521"
+mkdocs-material = "^9.5.10"
+mkdocstrings = "^0.24.0"
+mkdocs-git-revision-date-localized-plugin = "^1.2.4"
+mkdocs-mermaid2-plugin = "^1.1.1"
+mkdocs = "^1.5.3"
+mkdocstrings-python = "^1.8.0"
+mkdocs-terminal = "^4.4.0"
+termynal = "^0.12.1"
+mkdocs-section-index = "^0.3.8"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = ">= 2.21.0"
 ipykernel = "^6.27.1"
+pip-system-certs = "*"
+mkdocs-material = "^9.5.10"
+mkdocstrings = "^0.24.0"
+mkdocs-git-revision-date-localized-plugin = "^1.2.4"
+mkdocs-mermaid2-plugin = "^1.1.1"
+mkdocs = "^1.5.3"
+mkdocstrings-python = "^1.8.0"
+mkdocs-terminal = "^4.4.0"
+termynal = "^0.12.1"
+artifacts-keyring = "^0.3.4"
+black = { version = "24.2.0", extras = ["jupyter"] }
+hydra-core = "1.3.2"
+pymarkdownlnt = "0.9.13.4"
+pytest = "7.4.0"
+pytest-benchmark = "4.0.0"
+pytest-xdist = "3.3.1"
+rope = "1.9.0"
+ruff = "0.1.13"
+dvc = "3.40.1"
 
 [tool.poetry.group.test.dependencies]
 coverage = "^7"
 pytest = "^7"
 
 [tool.poetry.group.build.dependencies]
-python-semantic-release = "^7"
+python-semantic-release = "^8"
 twine = "< 4"
 
 [build-system]

@@ -1,0 +1,83 @@
+{
+    "images": [
+        {
+            "id": 1,
+            "file_name": "test.jpeg",
+            "width": 1536,
+            "height": 2048
+        }
+    ],
+    "type": "instances",
+    "annotations": [
+        {
+            "segmentation": [
+                582,
+                1551,
+                582,
+                1584,
+                624,
+                1584,
+                624,
+                1551
+            ],
+            "area": 1386,
+            "iscrowd": 0,
+            "ignore": 0,
+            "image_id": 1,
+            "bbox": [
+                582,
+                1551,
+                42,
+                33
+            ],
+            "category_id": 1,
+            "id": 1
+        },
+        {
+            "segmentation": [
+                621,
+                1442,
+                621,
+                1473,
+                650,
+                1473,
+                650,
+                1442
+            ],
+            "area": 899,
+            "iscrowd": 0,
+            "ignore": 0,
+            "image_id": 1,
+            "bbox": [
+                621,
+                1442,
+                29,
+                31
+            ],
+            "category_id": 3,
+            "id": 2
+        }
+    ],
+    "categories": [
+        {
+            "supercategory": "none",
+            "id": 1,
+            "name": "a"
+        },
+        {
+            "supercategory": "none",
+            "id": 2,
+            "name": "b"
+        },
+        {
+            "supercategory": "none",
+            "id": 3,
+            "name": "c"
+        },
+        {
+            "supercategory": "none",
+            "id": 4,
+            "name": "d"
+        }
+    ]
+}
