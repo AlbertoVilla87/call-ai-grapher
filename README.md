@@ -175,6 +175,7 @@ poetry run jupyter notebook
 ## Resources
 - [Poetry - Basic usage](https://python-poetry.org/docs/basic-usage/)
 - [pyenv - Usage](https://github.com/pyenv/pyenv#usage)
+- [Annotation Tool](https://github.com/drainingsun/ybat)
 
 # Build and Test
 
