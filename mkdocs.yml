@@ -1,0 +1,123 @@
+site_name: CallAIGrapher
+repo_url: https://github.com/AlbertoVilla87/call-ai-grapher
+
+theme:
+  name: "material" #readthedocs
+  icon:
+    repo: simple/github
+  palette:
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - content.code.annotate
+    - content.code.copy
+    - navigation.tabs
+extra:
+  social:
+    - icon: "fontawesome/brands/github"
+      link: "https://github.com/AlbertoVilla87/call-ai-grapher"
+
+markdown_extensions:
+  # Include admonitions https://squidfunk.github.io/mkdocs-material/reference/admonitions/
+  - admonition
+  - codehilite
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - attr_list
+  - md_in_html
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - attr_list
+  - md_in_html
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.arithmatex:
+      generic: true
+  - abbr
+  - footnotes
+  - toc:
+      permalink: true
+      title: On this page
+  - tables
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - toc:
+      permalink: true
+
+plugins:
+  - search
+  - termynal:
+        prompt_literal_start:
+        - ">"
+  - mkdocstrings:
+      handlers:
+        python:
+          import:
+          - https://docs.python.org/3/objects.inv
+          - https://installer.readthedocs.io/en/stable/objects.inv  # demonstration purpose in the docs
+          - https://mkdocstrings.github.io/autorefs/objects.inv
+          paths: [call_ai_grapher]  # search packages in the src folder
+          options:
+            docstring_options:
+              ignore_init_summary: true
+            docstring_section_style: list
+            filters: ["!^_"]
+            heading_level: 1
+            inherited_members: true
+            merge_init_into_class: true
+            separate_signature: true
+            show_root_heading: true
+            show_root_full_path: false
+            show_signature_annotations: true
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            signature_crossrefs: true
+            summary: true
+  - mermaid2
+  - git-revision-date-localized:
+      fallback_to_build_date: true
+
+extra_javascript:
+  - https://unpkg.com/mermaid/dist/mermaid.min.js
+  - javascripts/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+# Custom admonitions
+extra_css:
+  - stylesheets/extra.css
+
+nav:
+  - Home: index.md
+  - How-To Guides:
+    - TOC: how-to-guides/how-to-guides-intro.md
+    - Run your first example: how-to-guides/first-example.md
+  - API Reference:
+    - GANS: api-reference/gans.md
+    - Autoencoder: api-reference/autoencoder.md
+  - Release Notes: release-notes.md
+  - Explanation: explanation.md
+  - Experiments: experiments.md
