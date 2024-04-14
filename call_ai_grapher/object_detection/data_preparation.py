@@ -1,15 +1,31 @@
 import cv2
+import json
 import numpy as np
 import pandas as pd
 
-IMAGE_ID = "image_id"
+IMAGE_ID = "id"
+CATEGORY_ID = "id"
+CATEGORY_BOX = "category_id"
+IMAGE_CAT_ID = "image_id"
+CATEGORY_NAME = "name"
+IMAGES = "images"
+BOX = "bbox"
+ANNOTATIONS = "annotations"
+FILE_NAME = "file_name"
 LABEL_NAME = "label_name"
+CATEGORIES = "categories"
 X_MIN = "x_min"
 Y_MIN = "y_min"
 X_MAX = "x_max"
 Y_MAX = "y_max"
 
 # TODO: refactor OpenImages to adapt Coco format
+
+
+def read_json(path: str) -> dict:
+    with open(path, "r") as file:
+        data = json.load(file)
+    return data
 
 
 class GroundTruthData:
@@ -20,16 +36,83 @@ class GroundTruthData:
         :return: _description_
         :rtype: _type_
         """
-        self.data = pd.read_csv(data_path, sep=";")
+        self.data = read_json(data_path)
 
-    def get_coordinates(self) -> list:
-        return self.data[X_MIN, Y_MIN, X_MAX, Y_MAX].values
+    def get_name_category(self, cat_id: int) -> str:
+        """
+        Get the name of a category box
+        Args:
+            cat_id (int): id number
 
-    def get_unique_labels(self) -> list:
-        return self.data[IMAGE_ID].unique()
+        Returns:
+            str: name of label
+        """
+        cats = self.data[CATEGORIES]
+        for cat in cats:
+            if cat[CATEGORY_ID] == cat_id:
+                return cat[CATEGORY_NAME]
 
-    def get_labels(self) -> list:
-        return self.data[LABEL_NAME].values.tolist()
+    def get_coords_bbx_image_id(self, image_id: int) -> list:
+        """
+        Get the coordinates boxes of an specific image
+        Args:
+            image_id (int): _description_
+
+        Returns:
+            list: list of coordinates
+        """
+        boxes = []
+        anns = self.data[ANNOTATIONS]
+        for ann in anns:
+            if ann[IMAGE_CAT_ID] == image_id:
+                coord_x0 = ann[BOX][0]
+                coord_x1 = ann[BOX][0] + ann[BOX][2]
+                coord_y0 = ann[BOX][1]
+                coord_y1 = ann[BOX][1] + ann[BOX][3]
+                boxes.append([coord_x0, coord_y0, coord_x1, coord_y1])
+        return boxes
+
+    def get_cat_bbx_image_id(self, image_id: int) -> list:
+        """
+        Get the category boxes of an specific image
+        Args:
+            image_id (int): _description_
+
+        Returns:
+            list: list of coordinates
+        """
+        cats = []
+        anns = self.data[ANNOTATIONS]
+        for ann in anns:
+            if ann[IMAGE_CAT_ID] == image_id:
+                cats.append(ann[CATEGORY_BOX])
+        return cats
+
+    def get_images_id(self) -> list:
+        """
+        Get all the id of the labeled images
+
+        Returns:
+            list: _description_
+        """
+        images = self.data[IMAGES]
+        ids = []
+        for image in images:
+            ids.append(image[IMAGE_ID])
+        return ids
+
+    def get_images_file(self) -> list:
+        """
+        Get all the filenames of the labeled images
+
+        Returns:
+            list: _description_
+        """
+        images = self.data[IMAGES]
+        names = []
+        for image in images:
+            names.append(image[FILE_NAME])
+        return names
 
 
 class OpenImages(GroundTruthData):
@@ -42,19 +125,17 @@ class OpenImages(GroundTruthData):
         """
         super().__init__(data_label_path)
         self.root = image_folder
-        self.unique_images = self.get_labels()
+        self.images_id = self.get_images_id()
+        self.images_name = self.get_images_file()
 
     def __len__(self):
         return len(self.unique_images)
 
     def __getitem__(self, ix):
-        image_id = self.unique_images[ix]
-        image_path = f"{self.root}/{image_id}.jpg"
-        image = cv2.imread(image_path, 1)[..., ::-1]  # conver BGR to RGB
-        h, w, _ = image.shape
-        df = self.data.copy()
-        df = df[df[IMAGE_ID] == image_id]
-        boxes = self.get_labels
-        boxes = (boxes * np.array([w, h, w, h])).astype(np.uint16).tolist()
-        classes = df[LABEL_NAME].values.tolist()
+        image_name = self.images_name[ix]
+        image_id = self.images_id[ix]
+        image_path = f"{self.root}/{image_name}"
+        image = cv2.imread(image_path, 1)[..., ::-1]  # convert BGR to RGB
+        boxes = self.get_coords_bbx_image_id(image_id)
+        classes = self.get_cat_bbx_image_id(image_id)
         return image, boxes, classes, image_path

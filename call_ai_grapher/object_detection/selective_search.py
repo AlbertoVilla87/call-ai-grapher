@@ -6,29 +6,22 @@ from torch_snippets import *
 
 
 class SelectiveSearch:
-    """_summary_
-    Region Proposals Extraction
-    Attributes:
-    :param fpaths: store files path
-    :type fpaths: list
-    :param gtbbs: ground truth bounding boxes
-    :type gtbbs: list
-    :param clss: classes of objects
-    :type clss: list
-    :param deltas: delta offset of a bounding box with region proposals
-    :type deltas: list
-    :param rois: region proposal locations
-    :type rois: list
-    :param ious: IoU of region proposals with ground truths
-    :type ious: list
-    """
 
     def __init__(self):
+        """
+        Region Proposals Extraction
+        """
+        # Store files path
         self.fpaths = []
+        # Ground truth bounding boxes
         self.gtbbs = []
+        # Classes of objects
         self.clss = []
+        # Delta offset of a bounding box with region proposals
         self.deltas = []
+        # Region proposal locations
         self.rois = []
+        # IoU of region proposals with ground truths
         self.ious = []
 
     def fetching_pr_to_gt(self, ds: OpenImages):
@@ -88,33 +81,3 @@ class SelectiveSearch:
         if save_image:
             cv2.imwrite(out_path, vis)
         return regions
-
-    @staticmethod
-    def compute_iou(box_candidate: list, box_actual: list, epsilon: float = 1e-5) -> float:
-        """Intersection Over Union (IOU) measures how overlapping the predicted and
-        actual bounding boxes are, while Union measures the overall space possible for
-        overlap. IoU is the ratio of the overlapping region between the two bounding
-        boxes over the combined region of both the bounding boxes
-        :param box_candidate: coordinates of candidate
-        :type box_candidate: list
-        :param box_actual: coordinates of actual
-        :type box_actual: list
-        :param epsilon: address division by zero
-        :type epsilon: float
-        :return: _description_
-        :rtype: float
-        """
-        x1 = max(box_candidate[0], box_actual[0])
-        y1 = max(box_candidate[1], box_actual[1])
-        x2 = min(box_candidate[2], box_actual[2])
-        y2 = min(box_candidate[3], box_actual[3])
-        width = x2 - x1
-        height = y2 - y1
-        if (width < 0) or (height < 0):
-            return 0.0
-        area_overlap = width * height
-        area_a = (box_candidate[2] - box_candidate[0]) * (box_candidate[3] - box_candidate[1])
-        area_b = (box_actual[2] - box_actual[0]) * (box_actual[3] - box_actual[1])
-        area_combined = area_a + area_b - area_overlap
-        iou = area_overlap / (area_combined + epsilon)
-        return iou
