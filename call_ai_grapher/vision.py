@@ -1,13 +1,14 @@
+import glob
 import os
 import re
-import glob
+
 import imageio
-import torch
-import numpy as np
-from torchvision import datasets, transforms
-from torch.utils.data import DataLoader
-from torchvision.utils import make_grid
 import matplotlib.pyplot as plt
+import numpy as np
+import torch
+from torch.utils.data import DataLoader
+from torchvision import datasets, transforms
+from torchvision.utils import make_grid
 
 
 class Vision:

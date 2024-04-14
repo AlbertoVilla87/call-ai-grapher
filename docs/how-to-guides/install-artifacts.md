@@ -17,7 +17,7 @@ pip install keyring
 
 !!! warning
       Deactivate any virtual environment.
-      
+
 ### 3. Configure authentication for the Azure DevOps artifacts feed
 
 ```
@@ -38,9 +38,9 @@ poetry config certificates.devops.cert "path/cert.pem"
 !!! info
       The name `devops` will be referenced in the projects, but you are free to choose another name.
 
-!!! info      
+!!! info
       The ca-bundle.crt file is a bundle of trusted certificate authorities (CAs) used for verifying the authenticity of SSL/TLS certificates during secure connections. The specific location of the ca-bundle.crt file can vary depending on the operating system. Here are some common locations:
-      
+
       On Debian/Ubuntu-based systems:
 
       ```
@@ -71,7 +71,7 @@ poetry config certificates.devops.cert "path/cert.pem"
 ### 5. Add the Azure DevOps artifacts feed as an additional package source
 
 ```
-poetry source add --priority=supplemental repo_name 
+poetry source add --priority=supplemental repo_name
 ```
 
 ### 6. Add any package available in the artifacts feed

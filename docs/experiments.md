@@ -58,7 +58,7 @@ change the style. We continue to see a very abrupt jump.
 
 !!! Branch
 
-    [Experiment 3](https://github.com/AlbertoVilla87/call-ai-grapher/tree/ft/experiment3)   
+    [Experiment 3](https://github.com/AlbertoVilla87/call-ai-grapher/tree/ft/experiment3)
 
 ## :material-test-tube: **Experiment 4**
 
@@ -73,7 +73,7 @@ vanishing gradient issue.
 
 !!! Branch
 
-    [Experiment 4](https://github.com/AlbertoVilla87/call-ai-grapher/tree/ft/experiment_4)   
+    [Experiment 4](https://github.com/AlbertoVilla87/call-ai-grapher/tree/ft/experiment_4)
 
 ![Experiment 4](./assets/gif/exp_4_losses.png)
 
@@ -93,7 +93,7 @@ Build a Wasserstein GAN with Gradient Penalty (WGAN-GP) (https://arxiv.org/abs/1
 
 !!! Branch
 
-    [Experiment 5](https://github.com/AlbertoVilla87/call-ai-grapher/tree/ft/experiment_5)   
+    [Experiment 5](https://github.com/AlbertoVilla87/call-ai-grapher/tree/ft/experiment_5)
 
 ![Experiment 5](./assets/gif/exp_5_losses.png)
 
@@ -127,7 +127,7 @@ Include Autoencoder Denosing.
 
 !!! Branch
 
-    [Experiment 6](https://github.com/AlbertoVilla87/call-ai-grapher/tree/ft/experiment_6)   
+    [Experiment 6](https://github.com/AlbertoVilla87/call-ai-grapher/tree/ft/experiment_6)
 
 ![Experiment 6](./assets/gif/exp_6_losses.png)
 
@@ -155,7 +155,7 @@ our case is simpler and we can apply the following technique:
 
 !!! Branch
 
-    [Experiment 7](https://github.com/AlbertoVilla87/call-ai-grapher/tree/ft/experiment_7)   
+    [Experiment 7](https://github.com/AlbertoVilla87/call-ai-grapher/tree/ft/experiment_7)
 
 ![Experiment 7](./assets/gif/exp_7.jpeg)
 

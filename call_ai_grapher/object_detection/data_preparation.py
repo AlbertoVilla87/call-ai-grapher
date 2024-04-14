@@ -2,7 +2,6 @@ import cv2
 import numpy as np
 import pandas as pd
 
-
 IMAGE_ID = "image_id"
 LABEL_NAME = "label_name"
 X_MIN = "x_min"
