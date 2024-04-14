@@ -6,7 +6,6 @@ repos:
     hooks:
       - id: poetry-check # make sure the poetry configuration is not in a broken state
       - id: poetry-export # sync requirements.txt file with current dependencies
-        args: ["--without-hashes", "--format", "requirements.txt", "--output", "./deploy/databricks/requirements.txt", "--only", "main"]
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v3.2.0
     hooks:

@@ -1,11 +1,11 @@
-import logging
 import datetime
-
-from call_ai_grapher.vision import Vision
-from call_ai_grapher.gans import Training
-from config import gans_config
+import logging
 
 import torch
+
+from call_ai_grapher.gans import Training
+from call_ai_grapher.vision import Vision
+from config import gans_config
 
 torch.manual_seed(0)
 
@@ -32,7 +32,6 @@ def _main():
         crit_repeats = gans_config.CRIT_REPEATS
         data_correct = Vision.load_images(corr_dir, batch_size, image_w, image_h)
         data_uncorrect = Vision.load_images(unc_dir, batch_size, image_w, image_h)
-
         trainer = Training(
             n_epochs,
             z_dim,

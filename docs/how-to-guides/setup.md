@@ -89,7 +89,7 @@ Please activate the virtual environment by using `poetry shell` before running t
     ```
 
     _Install the Coverage Gutters extension if you are using Visual Studio Code, and click on "Watch" on the left side of the status bar in the bottom of the IDE to visualize the code coverage._
-  
+
 ## 5. Create a remote Azure repository from a local folder
 
 ### 5.1 Navigate to Repositories

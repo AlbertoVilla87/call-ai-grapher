@@ -1,11 +1,11 @@
-import logging
 import datetime
-
-from call_ai_grapher.vision import Vision
-from call_ai_grapher.autoencoder import Training
-from config import denoise_config
+import logging
 
 import torch
+
+from call_ai_grapher.autoencoder import Training
+from call_ai_grapher.vision import Vision
+from config import denoise_config
 
 torch.manual_seed(0)
 
@@ -30,7 +30,6 @@ def _main():
         train_dataset = Vision.load_images(img_dir, batch_size, image_w, image_h)
         val_dataset = Vision.load_images(img_dir, batch_size, image_w, image_h)
         test_dataset = Vision.load_images(img_dir, batch_size, image_w, image_h)
-
         trainer = Training(
             train_dataset,
             val_dataset,

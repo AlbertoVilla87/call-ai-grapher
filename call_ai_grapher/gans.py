@@ -1,30 +1,31 @@
-import torch
 import logging
-from torch import nn
-from tqdm.auto import tqdm
-from torch.utils.data import DataLoader
+
+import torch
 from tensorboardX import SummaryWriter
+from torch import nn
+from torch.utils.data import DataLoader
+from tqdm.auto import tqdm
 
 from call_ai_grapher.vision import Vision
 
 
 def get_noise(n_samples: int, z_dim: int, device: str = "cpu") -> torch.randn:
-    """Given the dimensions (n_samples, z_dim),
+    """
+    Given the dimensions (n_samples, z_dim),
     creates a tensor of that shape filled with random numbers from the normal distribution
-    :param n_samples: the number of samples to generate
-    :type n_samples: int
-    :param z_dim: the dimension of the noise vector
-    :type z_dim: int
-    :param device: _description_, defaults to "cpu"
-    :type device: str, optional
-    :return: _description_
-    :rtype: torch.randn
+
+    Args:
+        n_samples (int): the number of samples to generate
+        z_dim (int): the dimension of the noise vector
+        device (str, optional): _description_. Defaults to "cpu".
+
+    Returns:
+        torch.randn: _description_
     """
     return torch.randn(n_samples, z_dim).to(device)
 
 
 class Generator(nn.Module):
-
     def __init__(self, z_dim: int, im_dim: int, hidden_dim: int):
         """
         Generator class
@@ -35,7 +36,7 @@ class Generator(nn.Module):
               (MNIST is black-and-white, so 1 channel is your default)
             hidden_dim (int): the inner dimension, a scalar
         """
-        super(Generator, self).__init__()
+        super().__init__()
         self.z_dim = z_dim
         self.im_dim = im_dim
         self.hidden_dim = hidden_dim
@@ -96,7 +97,6 @@ class Generator(nn.Module):
 
 
 class Discriminator(nn.Module):
-
     def __init__(self, im_dim: int, hidden_dim: int):
         """
         Discriminator Class
@@ -106,7 +106,7 @@ class Discriminator(nn.Module):
               (MNIST is black-and-white, so 1 channel is your default)
             hidden_dim (int): the inner dimension, a scalar
         """
-        super(Discriminator, self).__init__()
+        super().__init__()
         self.im_dim = im_dim
         self.hidden_dim = hidden_dim
         self.disc = self.create_nn()

@@ -38,7 +38,7 @@ Please activate the virtual environment by using `poetry shell` before running t
     ```
     coverage xml
     ```
-    
+
     _Install the Coverage Gutters extension if you are using Visual Studio Code, and click on "Watch" on the left side of the status bar in the bottom of the IDE to visualize the code coverage._
 
 ## 👥  4. Contribute
