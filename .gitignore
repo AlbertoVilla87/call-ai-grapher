@@ -169,3 +169,6 @@ denoise
 fakes/*.png
 documents/*
 scrivener*
+
+# opencode local codegraph index
+.codegraph/
