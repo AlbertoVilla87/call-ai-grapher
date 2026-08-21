@@ -1,5 +1,29 @@
 # Introduction
 Improve handwriting using GANS
+
+## Roadmap
+
+Goal: an application that takes a scanned document written in poor handwriting and improves it towards a pretty handwriting style, with a regulator (`alpha`) that lets the user choose how much improvement is applied.
+
+Pipeline: `scanned page -> character detection -> character classification -> per-character stylization (alpha) -> page recomposition -> Gradio app`
+
+| Stage | Status | Branch |
+| ----- | ------ | ------ |
+| Pipeline skeleton (types, stages, orchestrator, CLI) | ✅ | `ft/pipeline-skeleton` |
+| Spanish alphabet dataset builder (A-Z + ñ, TTF + real samples) | ⬜ | `ft/alphabet-dataset` |
+| Character detector (YOLOv8, MSER fallback) | ⬜ | `ft/char-detector` |
+| Character classifier (CNN) | ⬜ | `ft/char-classifier` |
+| Per-character style transfer (pix2pix / latent AE) | ⬜ | `ft/style-stylizer` |
+| Blend regulator (latent interpolation alpha) | ⬜ | `ft/blend-regulator` |
+| Document recomposer (baseline alignment) | ⬜ | `ft/document-recomposer` |
+| Gradio app (upload, slider, before/after) | ⬜ | `ft/gradio-app` |
+
+Run the pipeline today (MSER detection + baseline cleanup stylizer):
+
+```
+python improve_document.py --input documents/page.jpeg --output documents/improved.png --alpha 0.8
+```
+
 ## Experiments
 
 ### Experiment 1
