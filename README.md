@@ -142,43 +142,45 @@ pycache__
 ```
 ## Installation process
 
-Install all the dependencies. Also creates the virtual environment if it didn't exist yet.
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/).
+
+Install all the dependencies. Also creates the virtual environment (`.venv`) if it didn't exist yet.
 ```
-poetry install
+uv sync
 ```
 
-_If the installation fails you are probably missing the required Python version. Find the required version by running `pyenv version`, and then install it by running `pyenv install x.y.z`, where x.y.z should be replaced with the version number. Depending on your internet connection and your machine the installation can take a few minutes._
+_If the installation fails you are probably missing the required Python version. uv installs it automatically, but you can also find the required version by running `pyenv version`, and then install it by running `pyenv install x.y.z`, where x.y.z should be replaced with the version number. Depending on your internet connection and your machine the installation can take a few minutes._
 
 Install the pre-commit hooks.
 ```
-poetry run pre-commit install
+uv run pre-commit install
 ```
 ## Run Gans Training
 
 ```
-poetry run python -m train
+uv run python -m train
 ```
 
 ## Run Autoencoder Denoising
 
 ```
-poetry run python -m denoise
+uv run python -m denoise
 ```
 
 ## Run Jupyter (FYI)
 
 ```
-poetry run jupyter notebook
+uv run jupyter notebook
 ```
 ## Software dependencies
-- Install [Poetry](https://python-poetry.org/docs/#installation).
+- Install [uv](https://docs.astral.sh/uv/getting-started/installation/).
 ## Resources
-- [Poetry - Basic usage](https://python-poetry.org/docs/basic-usage/)
+- [uv - Basic usage](https://docs.astral.sh/uv/guides/projects/)
 - [pyenv - Usage](https://github.com/pyenv/pyenv#usage)
 
 # Build and Test
 
-Please activate the virtual environment by using `poetry shell` before running the commands below, or prefix all commands with `poetry run`.
+Please activate the virtual environment by using `source .venv/bin/activate` before running the commands below, or prefix all commands with `uv run`.
 
 - Run pre-commit hooks for all files (not only staged files) manually.
   ```
