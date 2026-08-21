@@ -172,3 +172,6 @@ scrivener*
 
 # opencode local codegraph index
 .codegraph/
+
+# pytest junit output
+junit/

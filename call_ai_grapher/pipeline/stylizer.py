@@ -1,0 +1,60 @@
+"""Character stylization stage.
+
+Improves a character crop towards the target ("pretty") handwriting style.
+`alpha` is the improvement regulator requested by the user: 0 keeps the
+original stroke, 1 applies the full pretty style.
+
+The baseline implementation blends the crop with its binarized version, so
+the pipeline is usable end to end before any model is trained. It will be
+replaced by latent-space interpolation on the GAN/autoencoder (see
+ft/style-stylizer and ft/blend-regulator) while keeping this same interface.
+"""
+import logging
+
+import cv2
+import numpy as np
+
+
+class Stylizer:
+    def __init__(self, block_size: int = 31, c: int = 15):
+        """_summary_
+        :param block_size: adaptive threshold neighbourhood size
+        :type block_size: int
+        :param c: adaptive threshold constant
+        :type c: int
+        """
+        self.block_size = block_size
+        self.c = c
+
+    def stylize(self, crop: np.ndarray, alpha: float = 1.0) -> np.ndarray:
+        """Blend the raw crop with its cleaned version.
+
+        :param crop: grayscale character image
+        :type crop: np.ndarray
+        :param alpha: improvement amount in [0, 1]
+        :type alpha: float
+        :return: the stylized character image
+        :rtype: np.ndarray
+        """
+        alpha = min(max(alpha, 0.0), 1.0)
+        if alpha == 0.0:
+            return crop.copy()
+        clean = self._clean(crop)
+        return ((1.0 - alpha) * crop.astype(np.float32) + alpha * clean.astype(np.float32)).astype(crop.dtype)
+
+    def _clean(self, crop: np.ndarray) -> np.ndarray:
+        """Return a binarized version of the crop with the noise removed.
+
+        :param crop: character image, grayscale or BGR
+        :type crop: np.ndarray
+        :return: cleaned character image with the same channels as `crop`
+        :rtype: np.ndarray
+        """
+        gray = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY) if crop.ndim == 3 else crop
+        binary = cv2.adaptiveThreshold(
+            gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, self.block_size, self.c
+        )
+        binary = cv2.medianBlur(binary, 3)
+        if crop.ndim == 3:
+            binary = cv2.cvtColor(binary, cv2.COLOR_GRAY2BGR)
+        return binary
