@@ -10,7 +10,7 @@ Pipeline: `scanned page -> character detection -> character classification -> pe
 | Stage | Status | Branch |
 | ----- | ------ | ------ |
 | Pipeline skeleton (types, stages, orchestrator, CLI) | ✅ | `ft/pipeline-skeleton` |
-| Spanish alphabet dataset builder (A-Z + ñ, TTF + real samples) | ⬜ | `ft/alphabet-dataset` |
+| Spanish alphabet dataset builder (A-Z + ñ, TTF + real samples) | ✅ | `ft/alphabet-dataset` |
 | Character detector (YOLOv8, MSER fallback) | ⬜ | `ft/char-detector` |
 | Character classifier (CNN) | ⬜ | `ft/char-classifier` |
 | Per-character style transfer (pix2pix / latent AE) | ⬜ | `ft/style-stylizer` |
@@ -23,6 +23,14 @@ Run the pipeline today (MSER detection + baseline cleanup stylizer):
 ```
 python improve_document.py --input documents/page.jpeg --output documents/improved.png --alpha 0.8
 ```
+
+Build the alphabet dataset (drop your pretty style `.ttf` fonts into `fonts/` first):
+
+```
+python build_alphabet.py --fonts "fonts/**/*.ttf" --out dataset/alphabet --size 64
+```
+
+Ingest your own handwriting crops later with `--samples samples/`, where `samples/` contains one directory per character class.
 
 ## Experiments
 
