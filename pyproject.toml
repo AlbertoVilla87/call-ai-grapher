@@ -38,6 +38,7 @@ dependencies = [
     "selectivesearch>=0.4,<0.5",
     "torch-snippets>=0.521,<0.522",
     "numpy>=1.26,<2",
+    "ultralytics>=8.4.126",
 ]
 
 [dependency-groups]
