@@ -11,7 +11,7 @@ Pipeline: `scanned page -> character detection -> character classification -> pe
 | ----- | ------ | ------ |
 | Pipeline skeleton (types, stages, orchestrator, CLI) | ✅ | `ft/pipeline-skeleton` |
 | Spanish alphabet dataset builder (A-Z + ñ, TTF + real samples) | ✅ | `ft/alphabet-dataset` |
-| Character detector (YOLOv8, MSER fallback) | ⬜ | `ft/char-detector` |
+| Character detector (YOLOv8, MSER fallback) | ✅ | `ft/char-detector` |
 | Character classifier (CNN) | ⬜ | `ft/char-classifier` |
 | Per-character style transfer (pix2pix / latent AE) | ⬜ | `ft/style-stylizer` |
 | Blend regulator (latent interpolation alpha) | ⬜ | `ft/blend-regulator` |
@@ -31,6 +31,36 @@ python build_alphabet.py --fonts "fonts/**/*.ttf" --out dataset/alphabet --size 
 ```
 
 Ingest your own handwriting crops later with `--samples samples/`, where `samples/` contains one directory per character class.
+
+### Character detection with YOLOv8
+
+The detector locates characters on a scanned page (single class: `character`);
+labeling each one is the classifier's job (next milestone). Training data is
+generated synthetically from the alphabet glyphs, so no manual annotation is
+needed.
+
+1. Build the alphabet glyphs (previous step, `dataset/alphabet`).
+
+2. Generate synthetic training pages (scan-like degradation included):
+   ```
+   python generate_detector_dataset.py --glyphs dataset/alphabet --out dataset/detector --train-pages 500 --val-pages 100
+   ```
+
+3. Train the detector. Reference run on CPU: 5 epochs over 80 pages took ~1 min
+   and already reached `mAP50 = 0.78`, `recall = 0.96`; expect near-perfect
+   boxes with the settings below (~30-60 min on a modern laptop CPU):
+   ```
+   python train_detector.py --data dataset/detector/data.yaml --epochs 100 --imgsz 480 --out models/character_detector.pt
+   ```
+   Best weights are copied to `models/character_detector.pt`. Training curves
+   land in `runs/detect/` (open with `tensorboard --logdir runs`).
+
+4. Run the pipeline with the trained detector (`--detector mser` is the
+   default fallback when no model is trained yet):
+   ```
+   python improve_document.py --input documents/page.jpeg --output documents/improved.png \
+       --alpha 0.8 --detector yolo --model models/character_detector.pt --confidence 0.25
+   ```
 
 ## Experiments
 
