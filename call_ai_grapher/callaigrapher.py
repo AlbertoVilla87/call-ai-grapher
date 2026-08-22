@@ -64,7 +64,7 @@ class CallAIgraher:
             StyledChar(
                 box=box,
                 original=box.crop_from(page),
-                styled=self.stylizer.stylize(box.crop_from(page), alpha),
+                styled=self.stylizer.stylize(box.crop_from(page), alpha, label=box.label),
             )
             for box in result.boxes
         ]
