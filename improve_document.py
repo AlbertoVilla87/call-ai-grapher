@@ -22,6 +22,16 @@ def _build_classifier(args):
     return CharClassifier(args.classifier)
 
 
+def _build_stylizer(args):
+    if args.stylizer == "neural":
+        from call_ai_grapher.pipeline.stylizer import NeuralStylizer
+
+        return NeuralStylizer(args.stylizer_model)
+    from call_ai_grapher.pipeline.stylizer import Stylizer
+
+    return Stylizer()
+
+
 def _parse_args():
     parser = argparse.ArgumentParser(description="Improve the handwriting of a scanned document")
     parser.add_argument("--input", required=True, help="path to the scanned page image")
@@ -31,6 +41,10 @@ def _parse_args():
     parser.add_argument("--model", default="models/character_detector.pt", help="YOLO weights path (--detector yolo)")
     parser.add_argument("--confidence", type=float, default=0.25, help="minimum detection confidence (--detector yolo)")
     parser.add_argument("--classifier", default=None, help="classifier checkpoint to label characters (optional)")
+    parser.add_argument("--stylizer", choices=["baseline", "neural"], default="baseline", help="stylization backend")
+    parser.add_argument(
+        "--stylizer-model", default="models/char_stylizer.pt", help="stylizer checkpoint (--stylizer neural)"
+    )
     return parser.parse_args()
 
 
@@ -38,7 +52,11 @@ def _main():
     try:
         logging.basicConfig(format="%(asctime)-15s %(levelname)s %(message)s", level=logging.INFO)
         args = _parse_args()
-        grapher = CallAIgraher(detector=_build_detector(args), classifier=_build_classifier(args))
+        grapher = CallAIgraher(
+            detector=_build_detector(args),
+            classifier=_build_classifier(args),
+            stylizer=_build_stylizer(args),
+        )
         result = grapher.improve_document(args.input, args.output, args.alpha)
         logging.info(
             "Done: %d characters processed, output at %s",
