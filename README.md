@@ -12,7 +12,7 @@ Pipeline: `scanned page -> character detection -> character classification -> pe
 | Pipeline skeleton (types, stages, orchestrator, CLI) | ✅ | `ft/pipeline-skeleton` |
 | Spanish alphabet dataset builder (A-Z + ñ, TTF + real samples) | ✅ | `ft/alphabet-dataset` |
 | Character detector (YOLOv8, MSER fallback) | ✅ | `ft/char-detector` |
-| Character classifier (CNN) | ⬜ | `ft/char-classifier` |
+| Character classifier (CNN) | ✅ | `ft/char-classifier` |
 | Per-character style transfer (pix2pix / latent AE) | ⬜ | `ft/style-stylizer` |
 | Blend regulator (latent interpolation alpha) | ⬜ | `ft/blend-regulator` |
 | Document recomposer (baseline alignment) | ⬜ | `ft/document-recomposer` |
@@ -60,6 +60,26 @@ needed.
    ```
    python improve_document.py --input documents/page.jpeg --output documents/improved.png \
        --alpha 0.8 --detector yolo --model models/character_detector.pt --confidence 0.25
+   ```
+
+### Character classification (A-Z + Ñ)
+
+A small CNN (`CharCNN`, ~300k parameters) labels every detected character
+crop using the alphabet dataset from `build_alphabet.py`. It reads the same
+normalized images, so fonts and your real handwriting samples are both used
+automatically.
+
+1. Train on the alphabet dataset (seconds on CPU; reference: 83% accuracy
+   over 27 classes with only 2 fonts — add more fonts and real samples in
+   `--samples` to improve it):
+   ```
+   python train_classifier.py --data dataset/alphabet --out models/char_classifier.pt --epochs 40
+   ```
+
+2. Pass the checkpoint to the pipeline to label characters:
+   ```
+   python improve_document.py --input documents/page.jpeg --output documents/improved.png \
+       --alpha 0.8 --detector yolo --classifier models/char_classifier.pt
    ```
 
 ## Experiments
