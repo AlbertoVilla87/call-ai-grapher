@@ -15,9 +15,9 @@ Pipeline: `scanned page -> character detection -> character classification -> pe
 | Character classifier (CNN) | ✅ | `ft/char-classifier` |
 | Per-character style transfer (pix2pix) | ✅ | `ft/style-stylizer` |
 | Latent-space blend regulator | ✅ | `ft/blend-regulator` |
-| Per-character style transfer (pix2pix / latent AE) | ⬜ | `ft/style-stylizer` |
-| Blend regulator (latent interpolation alpha) | ⬜ | `ft/blend-regulator` |
-| Document recomposer (baseline alignment) | ⬜ | `ft/document-recomposer` |
+| Per-character style transfer (pix2pix / latent AE) | ✅ | `ft/style-stylizer` |
+| Blend regulator (latent interpolation alpha) | ✅ | `ft/blend-regulator` |
+| Document recomposer (baseline alignment) | ✅ | `ft/document-recomposer` |
 | Gradio app (upload, slider, before/after) | ✅ | `ft/web-ui` |
 
 Run the pipeline today (MSER detection + baseline cleanup stylizer):
