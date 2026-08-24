@@ -42,6 +42,21 @@ def build_classifier(model_path=None):
     return CharClassifier(model_path)
 
 
+def build_page_denoiser(enabled: bool = False):
+    """Build the whole-page preprocessing stage.
+
+    :param enabled: whether to flatten illumination and remove specks before detection
+    :type enabled: bool
+    :return: the configured preprocessor, or None when disabled
+    :rtype: Optional[PageDenoiser]
+    """
+    if not enabled:
+        return None
+    from call_ai_grapher.pipeline.page_denoiser import PageDenoiser
+
+    return PageDenoiser()
+
+
 def build_stylizer(
     backend: str = "baseline",
     stylizer_model: str = "models/char_stylizer.pt",

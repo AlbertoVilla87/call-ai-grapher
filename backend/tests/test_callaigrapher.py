@@ -45,6 +45,23 @@ def test_improve_document_alpha_zero_keeps_original(tmp_path):
     assert (original == styled).all()
 
 
+def test_preprocessor_is_applied_before_detection(tmp_path):
+    input_path = tmp_path / "page.png"
+    output_path = tmp_path / "improved.png"
+    _write_synthetic_page(input_path)
+
+    calls = []
+
+    def _spy(page):
+        calls.append(page.shape)
+        return page
+
+    grapher = CallAIgraher(detector=_FakeDetector(), preprocessor=_spy)
+    grapher.improve_document(str(input_path), str(output_path), alpha=1.0)
+
+    assert len(calls) == 1
+
+
 def test_load_page_missing_file_raises():
     grapher = CallAIgraher()
     try:

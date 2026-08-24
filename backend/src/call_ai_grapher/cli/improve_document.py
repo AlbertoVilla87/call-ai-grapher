@@ -5,6 +5,7 @@ from call_ai_grapher import CallAIgraher
 from call_ai_grapher.pipeline.factory import (
     build_classifier,
     build_detector,
+    build_page_denoiser,
     build_stylizer,
 )
 
@@ -18,6 +19,11 @@ def _parse_args(argv=None):
     parser.add_argument("--model", default="models/character_detector.pt", help="YOLO weights path (--detector yolo)")
     parser.add_argument("--confidence", type=float, default=0.25, help="minimum detection confidence (--detector yolo)")
     parser.add_argument("--classifier", default=None, help="classifier checkpoint to label characters (optional)")
+    parser.add_argument(
+        "--denoise-page",
+        action="store_true",
+        help="flatten uneven illumination and remove specks across the whole page before detection",
+    )
     parser.add_argument(
         "--stylizer", choices=["baseline", "neural", "latent"], default="baseline", help="stylization backend"
     )
@@ -40,6 +46,7 @@ def main(argv=None):
         grapher = CallAIgraher(
             detector=build_detector(args.detector, args.model, args.confidence),
             classifier=build_classifier(args.classifier),
+            preprocessor=build_page_denoiser(args.denoise_page),
             stylizer=build_stylizer(
                 args.stylizer,
                 stylizer_model=args.stylizer_model,
