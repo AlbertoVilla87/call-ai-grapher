@@ -184,3 +184,8 @@ deploy/databricks/requirements.txt
 /models/
 # ultralytics auto-downloaded base weights
 assets/yolov8n.pt
+/yolov8n.pt
+
+# Web frontend
+web/node_modules/
+web/dist/

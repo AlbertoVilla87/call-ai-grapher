@@ -1,8 +1,8 @@
 """Shared factories that assemble pipeline stages from plain options.
 
-Both `improve_document.py` (CLI) and `web_ui.py` (Gradio app) build the same
-stages from user-facing backend names and model paths; this module keeps a
-single source of truth for that wiring.
+Both `improve_document.py` (CLI) and `api/server.py` (web sessions) build the
+same stages from user-facing backend names and model paths; this module keeps
+a single source of truth for that wiring.
 """
 
 
