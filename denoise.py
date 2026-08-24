@@ -1,11 +1,11 @@
-import logging
 import datetime
-
-from call_ai_grapher.vision import Vision
-from call_ai_grapher.autoencoder import Training
-from config import denoise_config
+import logging
 
 import torch
+
+from call_ai_grapher.autoencoder import Training
+from call_ai_grapher.vision import Vision
+from config import denoise_config
 
 torch.manual_seed(0)
 

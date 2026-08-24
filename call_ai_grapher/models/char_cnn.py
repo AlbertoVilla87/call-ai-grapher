@@ -38,7 +38,13 @@ class CharCNN(nn.Module):
             nn.MaxPool2d(2),
         )
         pooled = size // 8
-        self.classifier = nn.Sequential(nn.Flatten(), nn.Linear(128 * pooled * pooled, 256), nn.ReLU(inplace=True), nn.Dropout(0.3), nn.Linear(256, num_classes))
+        self.classifier = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(128 * pooled * pooled, 256),
+            nn.ReLU(inplace=True),
+            nn.Dropout(0.3),
+            nn.Linear(256, num_classes),
+        )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Compute class logits for a batch of character images.
@@ -189,7 +195,9 @@ def train_model(
             correct += (outputs.argmax(1) == targets).sum().item()
             seen += len(targets)
         if epoch == 0 or (epoch + 1) % 10 == 0 or epoch == epochs - 1:
-            logging.info("epoch %d/%d - loss %.4f - accuracy %.3f", epoch + 1, epochs, total_loss / seen, correct / seen)
+            logging.info(
+                "epoch %d/%d - loss %.4f - accuracy %.3f", epoch + 1, epochs, total_loss / seen, correct / seen
+            )
 
     metrics = {"loss": total_loss / seen, "accuracy": correct / seen}
     model.eval()

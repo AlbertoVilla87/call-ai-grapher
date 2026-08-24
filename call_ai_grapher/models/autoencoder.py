@@ -153,8 +153,9 @@ def _collect_samples(data_dir: str, variants_per_glyph: int, seed: int) -> List[
     :return: list of (size, size) float arrays in [0, 1]
     :rtype: List[np.ndarray]
     """
-    import cv2
     from pathlib import Path
+
+    import cv2
 
     from call_ai_grapher.dataset.builder import normalize
     from call_ai_grapher.models.pair_generator import PairGenerator

@@ -183,7 +183,5 @@ def write_detector_dataset(
     data_yaml.write_text(
         f"path: {out_dir.resolve()}\ntrain: images/train\nval: images/val\nnames:\n  {CLASS_ID}: {CLASS_NAME}\n"
     )
-    logging.info(
-        "Detection dataset written to %s (%d train / %d val pages)", out_dir, train_pages, val_pages
-    )
+    logging.info("Detection dataset written to %s (%d train / %d val pages)", out_dir, train_pages, val_pages)
     return data_yaml
