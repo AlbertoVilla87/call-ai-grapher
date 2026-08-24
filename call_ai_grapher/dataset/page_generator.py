@@ -6,6 +6,7 @@ emitting the image plus character bounding boxes in YOLO label format
 single-class: it only locates characters; labeling each one is the
 classifier's job.
 """
+
 import logging
 from pathlib import Path
 from typing import Dict, Iterator, List, Tuple, Union

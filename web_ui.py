@@ -4,6 +4,7 @@ Upload a scanned page and the app detects and labels every character once;
 the improvement slider then re-stylizes and re-composes the page instantly,
 so the alpha regulator can be explored without paying for detection again.
 """
+
 import logging
 
 import cv2

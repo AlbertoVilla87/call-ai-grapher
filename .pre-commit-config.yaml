@@ -25,7 +25,7 @@ repos:
     hooks:
     -   id: pyupgrade # upgrade syntax for newer versions
 -   repo: https://github.com/psf/black
-    rev: 23.1.0
+    rev: 26.5.1
     hooks:
     -   id: black # format code
 -   repo: https://github.com/PyCQA/isort

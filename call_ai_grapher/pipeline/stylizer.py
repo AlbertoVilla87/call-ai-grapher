@@ -9,6 +9,7 @@ the pipeline is usable end to end before any model is trained. It will be
 replaced by latent-space interpolation on the GAN/autoencoder (see
 ft/style-stylizer and ft/blend-regulator) while keeping this same interface.
 """
+
 import logging
 
 import cv2

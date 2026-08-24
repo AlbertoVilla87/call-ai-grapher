@@ -17,7 +17,7 @@ classifiers = [
     "Operating System :: OS Independent"
 ]
 dependencies = [
-    "black>=24.3,<25",
+    "black>=26.3.1,<27",
     "python-dateutil>=2.8.2,<3",
     "types-python-dateutil>=2.8.19.14,<3",
     "pyspark>=3.4.1,<4",
@@ -64,6 +64,7 @@ packages = ["call_ai_grapher"]
 
 [tool.black]
 line-length = 120
+target-version = ["py311"]
 
 [tool.isort]
 profile = "black"

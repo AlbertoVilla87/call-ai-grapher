@@ -6,6 +6,7 @@ on the aligned pairs produced by PairDataset. One shared network handles all
 characters: the input crop carries the letter shape, the network only learns
 the style mapping.
 """
+
 import logging
 from pathlib import Path
 from typing import Union
