@@ -9,11 +9,10 @@ authors = [
 requires-python = ">=3.11,<4.0"
 
 [tool.uv.workspace]
-members = ["backend", "frontend"]
+members = ["backend"]
 
 [tool.uv.sources]
 call-ai-grapher = { workspace = true }
-call-aigrapher-ui = { workspace = true }
 
 [dependency-groups]
 dev = [
@@ -27,11 +26,11 @@ dev = [
     "mypy>=1.5.1,<2",
     "types-python-dateutil>=2.8.19.14,<3",
     "call-ai-grapher",
-    "call-aigrapher-ui",
 ]
 test = [
     "coverage>=7,<9",
     "pytest>=9,<10",
+    "httpx>=0.27,<1",
 ]
 build = [
     "python-semantic-release>=7,<8",
@@ -57,11 +56,10 @@ addopts = [
 ]
 testpaths = [
     "backend/tests",
-    "frontend/tests",
 ]
 
 [tool.coverage.run]
-source = ["call_ai_grapher", "call_aigrapher_ui"]
+source = ["call_ai_grapher"]
 omit = ["*__init__*"]
 
 [tool.semantic_release]

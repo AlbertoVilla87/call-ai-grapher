@@ -30,10 +30,14 @@ dependencies = [
     "selectivesearch>=0.4,<0.5",
     "numpy>=1.26",
     "ultralytics>=8.4.126",
+    "fastapi>=0.115,<1",
+    "uvicorn>=0.30,<1",
+    "python-multipart>=0.0.9,<1",
 ]
 
 [project.scripts]
 improve-document = "call_ai_grapher.cli.improve_document:main"
+api = "call_ai_grapher.api.server:main"
 build-alphabet = "call_ai_grapher.cli.build_alphabet:main"
 generate-detector-dataset = "call_ai_grapher.cli.generate_detector_dataset:main"
 train-detector = "call_ai_grapher.cli.train_detector:main"
