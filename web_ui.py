@@ -10,13 +10,26 @@ import cv2
 import gradio as gr
 import numpy as np
 
-from call_ai_grapher.pipeline.factory import build_classifier, build_detector, build_stylizer
+from call_ai_grapher.pipeline.factory import (
+    build_classifier,
+    build_detector,
+    build_stylizer,
+)
 from call_ai_grapher.pipeline.recomposer import Recomposer
 from call_ai_grapher.pipeline.types import StyledChar
 
 
-def analyze_page(image, detector_backend, yolo_model, confidence, classifier_path, stylizer_backend, stylizer_model,
-                 autoencoder_model, alphabet_dir):
+def analyze_page(
+    image,
+    detector_backend,
+    yolo_model,
+    confidence,
+    classifier_path,
+    stylizer_backend,
+    stylizer_model,
+    autoencoder_model,
+    alphabet_dir,
+):
     """Run detection and classification over the uploaded page.
 
     Builds every pipeline stage up front so slider updates only pay for
@@ -116,23 +129,32 @@ def create_app():
                 with gr.Accordion("Backends", open=False):
                     detector_backend = gr.Radio(["mser", "yolo"], value="mser", label="Detector")
                     yolo_model = gr.Textbox(
-                        value="models/character_detector.pt", label="YOLO weights", info="Detector backend \"yolo\""
+                        value="models/character_detector.pt", label="YOLO weights", info='Detector backend "yolo"'
                     )
                     confidence = gr.Slider(
-                        minimum=0.0, maximum=1.0, value=0.25, step=0.05, label="Detection confidence", info="Backend \"yolo\""
+                        minimum=0.0,
+                        maximum=1.0,
+                        value=0.25,
+                        step=0.05,
+                        label="Detection confidence",
+                        info='Backend "yolo"',
                     )
                     classifier_path = gr.Textbox(
                         value="", label="Classifier checkpoint", info="Optional; required by the latent stylizer"
                     )
                     stylizer_backend = gr.Radio(["baseline", "neural", "latent"], value="baseline", label="Stylizer")
                     stylizer_model = gr.Textbox(
-                        value="models/char_stylizer.pt", label="pix2pix checkpoint", info="Stylizer backend \"neural\""
+                        value="models/char_stylizer.pt", label="pix2pix checkpoint", info='Stylizer backend "neural"'
                     )
                     autoencoder_model = gr.Textbox(
-                        value="models/char_autoencoder.pt", label="Autoencoder checkpoint", info="Stylizer backend \"latent\""
+                        value="models/char_autoencoder.pt",
+                        label="Autoencoder checkpoint",
+                        info='Stylizer backend "latent"',
                     )
                     alphabet_dir = gr.Textbox(
-                        value="dataset/alphabet", label="Alphabet dataset", info="Pretty reference glyphs (backend \"latent\")"
+                        value="dataset/alphabet",
+                        label="Alphabet dataset",
+                        info='Pretty reference glyphs (backend "latent")',
                     )
                 analyze_btn = gr.Button("Analyze page", variant="primary")
                 status = gr.Textbox(label="Status", interactive=False)

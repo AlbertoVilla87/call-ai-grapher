@@ -24,9 +24,7 @@ def test_analyze_page_without_image_returns_hint():
 def test_analyze_page_reports_pipeline_error_in_status(tmp_path):
     missing = str(tmp_path / "no_such_font.pt")
 
-    state, _, status = web_ui.analyze_page(
-        _page(), "yolo", missing, 0.25, "", "baseline", "", "", ""
-    )
+    state, _, status = web_ui.analyze_page(_page(), "yolo", missing, 0.25, "", "baseline", "", "", "")
 
     assert state is None
     assert "Pipeline error" in status

@@ -1,7 +1,8 @@
 import cv2
+import matplotlib.pyplot as plt
+import numpy as np
 import selectivesearch
 from skimage.segmentation import felzenszwalb
-from torch_snippets import *
 
 
 class SelectiveSearch:
@@ -13,7 +14,7 @@ class SelectiveSearch:
         :param image_path: _description_
         :type image_path: str
         """
-        img = read(image_path)
+        img = cv2.imread(image_path)
         segments = felzenszwalb(img, scale=200)
         return img, segments
 
@@ -26,7 +27,12 @@ class SelectiveSearch:
         """
         img, segments = SelectiveSearch.segment_image(image_path)
         print(segments)
-        subplots([img, segments], titles=["Original Image", "Segments"], sz=10, nc=2)
+        _, axes = plt.subplots(1, 2, figsize=(10, 5))
+        for ax, image, title in zip(axes, [img, segments], ["Original Image", "Segments"]):
+            ax.imshow(image)
+            ax.set_title(title)
+            ax.axis("off")
+        plt.show()
 
     @staticmethod
     def extract_region_proposals(image_path: str, perc: float):
@@ -39,7 +45,7 @@ class SelectiveSearch:
         :return: _description_
         :rtype: _type_
         """
-        img = read(image_path)
+        img = cv2.imread(image_path)
         _, regions = selectivesearch.selective_search(img)
         img_area = np.prod(img.shape[:2])
         candidates = []
@@ -64,7 +70,12 @@ class SelectiveSearch:
         :type area_perc: float, optional
         """
         img, candidates = SelectiveSearch.extract_region_proposals(image_path, perc)
-        show(img, bbs=candidates)
+        fig, ax = plt.subplots(figsize=(10, 10))
+        ax.imshow(img)
+        for x, y, w, h in candidates:
+            ax.add_patch(plt.Rectangle((x, y), w, h, fill=False, edgecolor="red", linewidth=1))
+        ax.axis("off")
+        plt.show()
 
     @staticmethod
     def segment_characters_mser(image_path: str, save_image: bool = False):
