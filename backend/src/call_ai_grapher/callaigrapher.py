@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-from typing import Optional
+from typing import Callable, Optional
 
 import cv2
 import numpy as np
@@ -20,6 +20,7 @@ class CallAIgraher:
         classifier: Optional[CharClassifier] = None,
         stylizer: Optional[Stylizer] = None,
         recomposer: Optional[Recomposer] = None,
+        preprocessor: Optional[Callable[[np.ndarray], np.ndarray]] = None,
     ):
         """_summary_
         :param detector: character detection stage, defaults to MSER detector
@@ -30,11 +31,15 @@ class CallAIgraher:
         :type stylizer: Optional[Stylizer]
         :param recomposer: page recomposition stage, defaults to paste back
         :type recomposer: Optional[Recomposer]
+        :param preprocessor: optional whole-page cleanup applied before detection, useful for
+            phone photos with shadows and specks
+        :type preprocessor: Optional[Callable[[np.ndarray], np.ndarray]]
         """
         self.detector = detector or CharacterDetector()
         self.classifier = classifier
         self.stylizer = stylizer or Stylizer()
         self.recomposer = recomposer or Recomposer()
+        self.preprocessor = preprocessor
 
     def improve_document(self, input_path: str, output_path: str, alpha: float = 1.0) -> DocumentResult:
         """Improve the handwriting of a scanned document.
@@ -50,6 +55,8 @@ class CallAIgraher:
         :rtype: DocumentResult
         """
         page = self.load_page(input_path)
+        if self.preprocessor is not None:
+            page = self.preprocessor(page)
         result = DocumentResult(source_path=Path(input_path))
 
         result.boxes = self.detector.detect(page)

@@ -51,10 +51,10 @@ uv run ui
 
 Then open the URL printed in the terminal (http://127.0.0.1:7860 by default).
 
-Command line:
+Command line (`--alpha` goes from 0, untouched, to 1, fully cleaned; `--denoise-page` flattens shadows and removes specks across the whole page before detection, recommended for phone photos):
 
 ```
-uv run improve-document --input documents/page.jpeg --output documents/improved.png --alpha 0.8
+uv run improve-document --input documents/page.jpeg --output documents/improved.png --alpha 0.8 --denoise-page
 ```
 
 # Making it actually improve your handwriting
