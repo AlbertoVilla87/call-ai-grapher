@@ -1,50 +1,33 @@
 [project]
-name = "call_ai_grapher"
+name = "call-ai-grapher-workspace"
 version = "0.2.4"
 description = "Improve handwriting using GANS"
 license = { text = "Proprietary" }
 authors = [
     { name = "Your Name", email = "alberto.villa.manrique@gmail.com" }
 ]
-readme = "README.md"
 requires-python = ">=3.11,<4.0"
-keywords = []
-classifiers = [
-    "Development Status :: 2 - Pre-Alpha",
-    "Environment :: Other Environment",
-    "Intended Audience :: End Users/Desktop",
-    "Natural Language :: English",
-    "Operating System :: OS Independent"
-]
-dependencies = [
-    "black>=26.3.1,<27",
-    "python-dateutil>=2.8.2,<3",
-    "types-python-dateutil>=2.8.19.14,<3",
-    "pyspark>=3.4.1,<4",
-    "pyyaml>=6.0.1,<7",
-    "mypy>=1.5.1,<2",
-    "torch>=2.13,<3",
-    "torchvision>=0.28,<0.29",
-    "matplotlib>=3.8.1,<4",
-    "imageio>=2.32.0,<3",
-    "jupyter>=1.0.0,<2",
-    "pyzmq>=25.1.2,<27",
-    "traitlets>=5.14.0,<6",
-    "ipython>=8.18.1",
-    "easyocr>=1.7.1,<2",
-    "opencv-python>=4.8.1.78,<5",
-    "tensorboardx>=2.6.2.2,<3",
-    "tensorboard>=2.15.1,<3",
-    "selectivesearch>=0.4,<0.5",
-    "numpy>=1.26",
-    "ultralytics>=8.4.126",
-    "gradio>=6.15.1,<7",
-]
+
+[tool.uv.workspace]
+members = ["backend", "frontend"]
+
+[tool.uv.sources]
+call-ai-grapher = { workspace = true }
+call-aigrapher-ui = { workspace = true }
 
 [dependency-groups]
 dev = [
     "pre-commit>=2.21.0",
     "ipykernel>=6.27.1,<7",
+    "jupyter>=1.0.0,<2",
+    "ipython>=8.18.1",
+    "pyzmq>=25.1.2,<27",
+    "traitlets>=5.14.0,<6",
+    "black>=26.3.1,<27",
+    "mypy>=1.5.1,<2",
+    "types-python-dateutil>=2.8.19.14,<3",
+    "call-ai-grapher",
+    "call-aigrapher-ui",
 ]
 test = [
     "coverage>=7,<9",
@@ -54,13 +37,6 @@ build = [
     "python-semantic-release>=7,<8",
     "twine<4",
 ]
-
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
-[tool.hatch.build.targets.wheel]
-packages = ["call_ai_grapher"]
 
 [tool.black]
 line-length = 120
@@ -72,29 +48,32 @@ profile = "black"
 [tool.flake8]
 max-line-length = 120
 extend-ignore = "E203, E211, E999, F401, F821, W503"
-exclude = ".git, __pycache__, dist"
+exclude = ".git, __pycache__, dist, .venv"
 
 [tool.pytest.ini_options]
-pythonpath = ["."]
 addopts = [
     "--import-mode=importlib",
     "--junitxml=junit/test-results.xml"
 ]
+testpaths = [
+    "backend/tests",
+    "frontend/tests",
+]
 
 [tool.coverage.run]
-source = ["call_ai_grapher"]
+source = ["call_ai_grapher", "call_aigrapher_ui"]
 omit = ["*__init__*"]
 
 [tool.semantic_release]
 branch = "main"
-version_toml = "pyproject.toml:project.version"
+version_toml = "backend/pyproject.toml:project.version"
 version_source = "commit"
 tag_commit = true
 major_on_zero = false
 commit_parser = "semantic_release.history.emoji_parser"
 upload_to_repository = false
 remove_dist = false
-build_command = "uv build"
+build_command = "uv build --package call-ai-grapher"
 tag_format = "{version}"
 major_emoji = "\U0001F4A5"
 minor_emoji = "\u2728,\U0001F3D7,\u267B\uFE0F,\u26A1,\U0001F47D"
