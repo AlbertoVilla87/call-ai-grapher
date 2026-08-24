@@ -2,40 +2,11 @@ import argparse
 import logging
 
 from call_ai_grapher import CallAIgraher
-
-
-def _build_detector(args):
-    if args.detector == "yolo":
-        from call_ai_grapher.pipeline.yolo_detector import YoloCharacterDetector
-
-        return YoloCharacterDetector(args.model, confidence=args.confidence)
-    from call_ai_grapher.pipeline.detector import CharacterDetector
-
-    return CharacterDetector()
-
-
-def _build_classifier(args):
-    if not args.classifier:
-        return None
-    from call_ai_grapher.pipeline.classifier import CharClassifier
-
-    return CharClassifier(args.classifier)
-
-
-def _build_stylizer(args):
-    if args.stylizer == "neural":
-        from call_ai_grapher.pipeline.stylizer import NeuralStylizer
-
-        return NeuralStylizer(args.stylizer_model)
-    if args.stylizer == "latent":
-        from call_ai_grapher.pipeline.stylizer import LatentStylizer
-
-        if not args.classifier:
-            raise ValueError("--stylizer latent requires --classifier so each character finds its reference glyph")
-        return LatentStylizer(args.ae_model, alphabet_dir=args.alphabet_dir)
-    from call_ai_grapher.pipeline.stylizer import Stylizer
-
-    return Stylizer()
+from call_ai_grapher.pipeline.factory import (
+    build_classifier,
+    build_detector,
+    build_stylizer,
+)
 
 
 def _parse_args():
@@ -67,9 +38,15 @@ def _main():
         logging.basicConfig(format="%(asctime)-15s %(levelname)s %(message)s", level=logging.INFO)
         args = _parse_args()
         grapher = CallAIgraher(
-            detector=_build_detector(args),
-            classifier=_build_classifier(args),
-            stylizer=_build_stylizer(args),
+            detector=build_detector(args.detector, args.model, args.confidence),
+            classifier=build_classifier(args.classifier),
+            stylizer=build_stylizer(
+                args.stylizer,
+                stylizer_model=args.stylizer_model,
+                autoencoder_model=args.ae_model,
+                alphabet_dir=args.alphabet_dir,
+                classifier_model=args.classifier,
+            ),
         )
         result = grapher.improve_document(args.input, args.output, args.alpha)
         logging.info(
