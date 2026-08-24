@@ -1,4 +1,5 @@
 """Trained models shared between training CLIs and pipeline stages."""
+
 from call_ai_grapher.models.autoencoder import (
     CharAutoEncoder,
     load_autoencoder,

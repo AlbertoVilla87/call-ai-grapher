@@ -4,6 +4,7 @@ Wraps an ultralytics YOLO model trained to locate characters on a page
 (single class). Implements the same interface as the MSER detector, so the
 pipeline orchestrator can swap between them transparently.
 """
+
 import logging
 from pathlib import Path
 from typing import List, Union

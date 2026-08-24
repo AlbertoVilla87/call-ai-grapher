@@ -9,6 +9,7 @@ The latent blend is what powers `LatentStylizer`: instead of cross-fading
 pixels (double exposure), alpha interpolates between the two encodings and
 the decoder renders a coherent intermediate handwriting.
 """
+
 import logging
 import random
 from typing import List

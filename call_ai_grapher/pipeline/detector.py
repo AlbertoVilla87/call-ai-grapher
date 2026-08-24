@@ -5,6 +5,7 @@ reuses the MSER approach from experiment 7 (object_detection/selective_search)
 but returns structured boxes in reading order instead of an annotated image.
 Once trained, a YOLO model will back this same interface (ft/char-detector).
 """
+
 import logging
 from typing import List
 

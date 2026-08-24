@@ -4,6 +4,7 @@ Assigns a label (A-Z plus Ñ) and a confidence to each detected character
 crop using the CharCNN trained by `train_classifier.py` on the alphabet
 dataset built by `build_alphabet.py`.
 """
+
 import logging
 from typing import List, Tuple
 

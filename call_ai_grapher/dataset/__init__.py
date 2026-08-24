@@ -1,4 +1,5 @@
 """Alphabet dataset generation and ingestion."""
+
 from call_ai_grapher.dataset.builder import (
     AlphabetDatasetBuilder,
     class_counts,

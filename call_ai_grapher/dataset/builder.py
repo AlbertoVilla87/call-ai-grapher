@@ -5,6 +5,7 @@ character of the Spanish alphabet with TrueType fonts, and ingests real
 handwriting samples provided by the user. All images are normalized to a
 fixed size so later stages (classifier, stylizer) can consume them directly.
 """
+
 import glob as _glob
 import logging
 from pathlib import Path

@@ -5,6 +5,7 @@ distortions (elastic deformation, slant, thickness changes, noise and blur)
 to synthesize its "ugly" counterpart. Because both images derive from the
 same render, pairs are pixel-aligned and no annotation is needed.
 """
+
 import logging
 from pathlib import Path
 from typing import Tuple, Union

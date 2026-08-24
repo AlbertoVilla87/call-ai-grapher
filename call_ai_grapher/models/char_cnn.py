@@ -3,6 +3,7 @@
 Shared by the training CLI (`train_classifier.py`) and the pipeline stage
 (`CharClassifier`) so architecture and checkpoint format stay in sync.
 """
+
 import logging
 from pathlib import Path
 from typing import Dict, List, Tuple, Union

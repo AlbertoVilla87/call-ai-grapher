@@ -5,6 +5,7 @@ aligning replacements vertically by character baseline so strokes sit on the
 same line instead of floating inside their bounding boxes (see
 ft/document-recomposer).
 """
+
 import logging
 from typing import List, Optional
 
