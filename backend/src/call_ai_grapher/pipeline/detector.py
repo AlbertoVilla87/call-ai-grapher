@@ -38,6 +38,12 @@ class CharacterDetector:
         """
         gray = self._to_gray(page)
         scaled = cv2.resize(gray, None, fx=self.scale, fy=self.scale, interpolation=cv2.INTER_CUBIC)
+        # TODO(ft/char-detector): MSER defaults cap region area at 14400 px *after* the
+        # scale=2.0 upscale, so characters bigger than ~85 px per side in the source page are
+        # silently dropped (e.g. full-resolution phone photos of a page yield zero detections).
+        # Make the area window adaptive (normalize by image size, or auto-downscale/tile large
+        # pages before MSER) and add a regression test with a big real photo such as
+        # assets/gif/exp_7.jpeg (3072x4096), which currently detects nothing.
         regions, _ = cv2.MSER_create().detectRegions(scaled)
 
         boxes = []
