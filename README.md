@@ -23,13 +23,13 @@ Pipeline: `scanned page -> character detection -> character classification -> pe
 Run the pipeline today (MSER detection + baseline cleanup stylizer):
 
 ```
-python improve_document.py --input documents/page.jpeg --output documents/improved.png --alpha 0.8
+uv run improve-document --input documents/page.jpeg --output documents/improved.png --alpha 0.8
 ```
 
 Build the alphabet dataset (drop your pretty style `.ttf` fonts into `fonts/` first):
 
 ```
-python build_alphabet.py --fonts "fonts/**/*.ttf" --out dataset/alphabet --size 64
+uv run build-alphabet --fonts "fonts/**/*.ttf" --out dataset/alphabet --size 64
 ```
 
 Ingest your own handwriting crops later with `--samples samples/`, where `samples/` contains one directory per character class.
@@ -45,14 +45,14 @@ needed.
 
 2. Generate synthetic training pages (scan-like degradation included):
    ```
-   python generate_detector_dataset.py --glyphs dataset/alphabet --out dataset/detector --train-pages 500 --val-pages 100
+   uv run generate-detector-dataset --glyphs dataset/alphabet --out dataset/detector --train-pages 500 --val-pages 100
    ```
 
 3. Train the detector. Reference run on CPU: 5 epochs over 80 pages took ~1 min
    and already reached `mAP50 = 0.78`, `recall = 0.96`; expect near-perfect
    boxes with the settings below (~30-60 min on a modern laptop CPU):
    ```
-   python train_detector.py --data dataset/detector/data.yaml --epochs 100 --imgsz 480 --out models/character_detector.pt
+   uv run train-detector --data dataset/detector/data.yaml --epochs 100 --imgsz 480 --out models/character_detector.pt
    ```
    Best weights are copied to `models/character_detector.pt`. Training curves
    land in `runs/detect/` (open with `tensorboard --logdir runs`).
@@ -60,7 +60,7 @@ needed.
 4. Run the pipeline with the trained detector (`--detector mser` is the
    default fallback when no model is trained yet):
    ```
-   python improve_document.py --input documents/page.jpeg --output documents/improved.png \
+   uv run improve-document --input documents/page.jpeg --output documents/improved.png \
        --alpha 0.8 --detector yolo --model models/character_detector.pt --confidence 0.25
    ```
 
@@ -75,12 +75,12 @@ automatically.
    over 27 classes with only 2 fonts — add more fonts and real samples in
    `--samples` to improve it):
    ```
-   python train_classifier.py --data dataset/alphabet --out models/char_classifier.pt --epochs 40
+   uv run train-classifier --data dataset/alphabet --out models/char_classifier.pt --epochs 40
    ```
 
 2. Pass the checkpoint to the pipeline to label characters:
    ```
-   python improve_document.py --input documents/page.jpeg --output documents/improved.png \
+   uv run improve-document --input documents/page.jpeg --output documents/improved.png \
        --alpha 0.8 --detector yolo --classifier models/char_classifier.pt
    ```
 
@@ -99,14 +99,14 @@ sides of every pair are pixel-aligned without manual annotation.
 1. Train on the alphabet dataset (~2 min CPU for 15 epochs; L1 drops from
    0.40 to 0.03 meaning the generator reproduces the pretty style):
    ```
-   python train_stylizer.py --data dataset/alphabet --out models/char_stylizer.pt --epochs 30
+   uv run train-stylizer --data dataset/alphabet --out models/char_stylizer.pt --epochs 30
    ```
 
 2. Run the pipeline with neural stylization. The regulator `--alpha` becomes
    a cross-fade between your original stroke (0) and the full pretty style
    (1):
    ```
-   python improve_document.py --input documents/page.jpeg --output documents/improved.png \
+   uv run improve-document --input documents/page.jpeg --output documents/improved.png \
        --alpha 0.7 --detector yolo --classifier models/char_classifier.pt \
        --stylizer neural --stylizer-model models/char_stylizer.pt
    ```
@@ -126,13 +126,13 @@ dataset using the classifier label.
 1. Train the autoencoder (~30 s CPU for 20 epochs; reconstruction L1 drops
    from 0.37 to 0.04):
    ```
-   python train_autoencoder.py --data dataset/alphabet --out models/char_autoencoder.pt --epochs 30
+   uv run train-autoencoder --data dataset/alphabet --out models/char_autoencoder.pt --epochs 30
    ```
 
 2. Run the pipeline with latent stylization. This backend requires the
    classifier so each character finds its reference glyph:
    ```
-   python improve_document.py --input documents/page.jpeg --output documents/improved.png \
+   uv run improve-document --input documents/page.jpeg --output documents/improved.png \
        --alpha 0.5 --detector yolo --classifier models/char_classifier.pt \
        --stylizer latent --ae-model models/char_autoencoder.pt --alphabet-dir dataset/alphabet
    ```
@@ -145,7 +145,7 @@ once; the improvement slider then re-stylizes the page instantly, comparing
 the original document (before) against the improved one (after).
 
 ```
-python web_ui.py
+uv run ui
 ```
 
 Then open http://127.0.0.1:7861. The "Backends" panel mirrors the CLI flags:
@@ -183,32 +183,32 @@ Same GANS model without creating a new Discriminator instance when we change the
 
 We go back to GANS of experiment 1. However, in this case, we have a vanishing gradient issue. When we change the image, The discriminator is unable to distinguish that change and is fooled by the generator. To avoid this, we can apply Wasserstein GAN with Gradient Penalty.
 
-![Experiment 4](./gif/exp_4_losses.png)
+![Experiment 4](./assets/gif/exp_4_losses.png)
 
 ### Experiment 5
 
 Build a Wasserstein GAN with Gradient Penalty (WGAN-GP) (https://arxiv.org/abs/1701.07875, https://arxiv.org/pdf/1704.00028.pdf, https://lilianweng.github.io/posts/2017-08-20-gan/) that solves the vanishing gradient issue with the GANs seen in experiment 4.
 
-![Experiment 5](./gif/exp_5_losses.png)
+![Experiment 5](./assets/gif/exp_5_losses.png)
 
 We can see as the discriminator is able to reduce the losses when picture is changing, providing feedback to generator to adapt the new style. However, we continue to see a lot of noise which could be removed adding to the generator a denoising autoencoder module https://plainenglish.io/blog/denoising-autoencoder-in-pytorch-on-mnist-dataset-a76b8824e57e. We need to analyze why in step 490 the loss discriminator increase and then is constant.
 
 | Experiment | Description | Results |
 | -------- | -------- | -------- |
-|  1   | GANS with two discriminators | ![Experiment 1](./gif/evol.gif)   |
-|  2   | GANS with convolution and two discriminators |![Experiment 2](./gif/exp_2.gif)   |
-|  3   | GANS with convolution and one discriminator |![Experiment 3](./gif/exp_3.gif)   |
-|  4   | GANS with one discriminator |![Experiment 4](./gif/exp_4.gif)   |
-|  5   | GANS with WGAN-GP |![Experiment 5](./gif/exp_5.gif)   |
+|  1   | GANS with two discriminators | ![Experiment 1](./assets/gif/evol.gif)   |
+|  2   | GANS with convolution and two discriminators |![Experiment 2](./assets/gif/exp_2.gif)   |
+|  3   | GANS with convolution and one discriminator |![Experiment 3](./assets/gif/exp_3.gif)   |
+|  4   | GANS with one discriminator |![Experiment 4](./assets/gif/exp_4.gif)   |
+|  5   | GANS with WGAN-GP |![Experiment 5](./assets/gif/exp_5.gif)   |
 
 
 ### Experiment 6
 
 Include Autoencoder Denosing.
 
-![Experiment 6](./gif/exp_6_losses.png)
+![Experiment 6](./assets/gif/exp_6_losses.png)
 
-![Experiment 6](./gif/exp_6.gif)
+![Experiment 6](./assets/gif/exp_6.gif)
 
 We can observe a high noise removal performance within a few epochs of training. However, the letters 'c' and 'e' are very similar. This might be due to the limited variability of the sample, as only one sample per character is available.
 
@@ -219,91 +219,46 @@ We research about object detection. We discover an important part before detecti
 https://stackoverflow.com/questions/40443988/python-opencv-ocr-image-segmentation
 
 
-<img src="./gif/exp_7.jpeg" alt="Experiment 7" width="500" />
+<img src="./assets/gif/exp_7.jpeg" alt="Experiment 7" width="500" />
 
 We can see a high level character recognition but we still seeing areas with multiple characters. Therefore, Object Detection with RNN is needed.
 
 ## Project Structure
 
-The main project folder contains the following files and folders:
+The repository is a [uv workspace](https://docs.astral.sh/uv/concepts/workspaces/) split into backend and frontend:
 
 ```bash
-pycache__
-├── call_ai_grapher
-│   ├── __pycache__
-│   └── notebook
-├── config
-├── denoise
-│   └── experiment_6
-├── documents
-│   └── experiment_7
-├── fakes
-│   ├── experiment_1
-│   ├── experiment_2
-│   ├── experiment_3
-│   ├── experiment_4
-│   └── experiment_5
-├── fonts
-│   ├── ariana-violeta-font
-│   ├── believe-it-font
-│   ├── glorious-free-font
-│   └── winter-song-font
-├── fonts_samples
-│   ├── scrivener_words_ArianaVioleta-dz2K
-│   │   └── images
-│   ├── scrivener_words_BelieveIt-DvLE
-│   │   └── images
-│   └── scrivener_words_GloriousFree-dBR6
-│       └── images
-├── gif
-├── handwriting
-│   └── images
-├── myhandw
-│   └── images
-└── runs
-    ├── Jan02_10-51-48_MCCA-DCG46M0G6N-exp_4_2024-01-02_10-51-48
-    ├── Jan02_11-00-46_MCCA-DCG46M0G6N-exp_4_2024-01-02_11-00-46
-    ├── Jan02_11-02-49_MCCA-DCG46M0G6N-exp_4_2024-01-02_11-02-49
-    ├── Jan02_11-10-56_MCCA-DCG46M0G6N-exp_4_2024-01-02_11-10-56
-    ├── Jan02_11-12-18_MCCA-DCG46M0G6N-exp_4_2024-01-02_11-12-18
-    ├── Jan02_11-19-26_MCCA-DCG46M0G6N-exp_4_2024-01-02_11-19-26
-    ├── Jan02_11-19-45_MCCA-DCG46M0G6N-exp_4_2024-01-02_11-19-45
-    │   └── LOSS
-    │       ├── mean_discriminator_loss
-    │       └── mean_generator_loss
-    ├── Jan02_11-21-34_MCCA-DCG46M0G6N-exp_4_2024-01-02_11-21-34
-    │   └── LOSS
-    │       ├── mean_discriminator_loss
-    │       └── mean_generator_loss
-    ├── Jan02_12-39-09_MCCA-DCG46M0G6N-exp_5_2024-01-02_12-39-09
-    ├── Jan02_12-40-28_MCCA-DCG46M0G6N-exp_5_2024-01-02_12-40-28
-    │   └── LOSS
-    │       ├── mean_discriminator_loss
-    │       └── mean_generator_loss
-    ├── Jan04_18-30-27_MCCA-DCG46M0G6N-exp_6_2024-01-04_18-30-27
-    │   └── LOSS
-    │       ├── train_loss
-    │       └── val_loss
-    ├── Jan05_16-45-38_MCCA-DCG46M0G6N-exp_5_2024-01-05_16-45-38
-    │   └── LOSS
-    │       ├── mean_discriminator_loss
-    │       └── mean_generator_loss
-    ├── Jan05_16-57-47_MCCA-DCG46M0G6N-exp_5_2024-01-05_16-57-47
-    │   └── LOSS
-    │       ├── mean_discriminator_loss
-    │       └── mean_generator_loss
-    └── Jan05_17-02-25_MCCA-DCG46M0G6N-exp_5_2024-01-05_17-02-25
+├── pyproject.toml               # workspace root + shared tooling config
+├── assets                       # reference images, gifs and base weights
+│   ├── gif
+│   ├── handwriting
+│   ├── myhandw
+│   └── yolov8n.pt
+├── backend
+│   ├── experiments              # early GAN/denoising experiment scripts
+│   ├── pyproject.toml           # call-ai-grapher package + CLI entry points
+│   └── src/call_ai_grapher      # pipeline, models, dataset, object detection...
+│       ├── cli                  # command line entry point modules
+│       └── config               # experiment settings (gans_config, denoise_config)
+├── frontend
+│   ├── pyproject.toml           # call-aigrapher-ui package (Gradio)
+│   ├── src/call_aigrapher_ui    # web app
+│   └── tests
+└── deploy/databricks            # requirements.txt generated by pre-commit
 ```
+
+Generated artifacts (`dataset/`, `models/`, `runs/`, `junit/`) stay at the repository root and are git-ignored.
+
 ## Installation process
 
 Install [uv](https://docs.astral.sh/uv/getting-started/installation/).
 
 Install all the dependencies. Also creates the virtual environment (`.venv`) if it didn't exist yet.
 ```
-uv sync
+uv sync --all-groups
 ```
 
-_If the installation fails you are probably missing the required Python version. uv installs it automatically, but you can also find the required version by running `pyenv version`, and then install it by running `pyenv install x.y.z`, where x.y.z should be replaced with the version number. Depending on your internet connection and your machine the installation can take a few minutes._
+_If the installation fails you are probably missing the required Python version. uv installs it automatically. Depending on your internet connection and your machine the installation can take a few minutes._
 
 Install the pre-commit hooks.
 ```
@@ -312,13 +267,13 @@ uv run pre-commit install
 ## Run Gans Training
 
 ```
-uv run python -m train
+uv run python backend/experiments/train.py
 ```
 
 ## Run Autoencoder Denoising
 
 ```
-uv run python -m denoise
+uv run python backend/experiments/denoise.py
 ```
 
 ## Run Jupyter (FYI)
