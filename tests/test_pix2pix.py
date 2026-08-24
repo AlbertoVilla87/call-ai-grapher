@@ -2,7 +2,13 @@ import numpy as np
 import pytest
 import torch
 
-from call_ai_grapher.models import PairDataset, PairGenerator, PatchDiscriminator, UNetGenerator, train_stylizer
+from call_ai_grapher.models import (
+    PairDataset,
+    PairGenerator,
+    PatchDiscriminator,
+    UNetGenerator,
+    train_stylizer,
+)
 from call_ai_grapher.pipeline.stylizer import NeuralStylizer
 
 

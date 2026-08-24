@@ -1,9 +1,10 @@
-import torch
 import logging
-from torch import nn
-from tqdm.auto import tqdm
-from torch.utils.data import DataLoader
+
+import torch
 from tensorboardX import SummaryWriter
+from torch import nn
+from torch.utils.data import DataLoader
+from tqdm.auto import tqdm
 
 from call_ai_grapher.vision import Vision
 
@@ -37,7 +38,7 @@ class Generator(nn.Module):
         :param hidden_dim: _description_,
         :type hidden_dim: int, optional
         """
-        super(Generator, self).__init__()
+        super().__init__()
         self.z_dim = z_dim
         self.im_dim = im_dim
         self.hidden_dim = hidden_dim
@@ -99,7 +100,7 @@ class Discriminator(nn.Module):
         :param hidden_dim: _description_, defaults to 128
         :type hidden_dim: int, optional
         """
-        super(Discriminator, self).__init__()
+        super().__init__()
         self.im_dim = im_dim
         self.hidden_dim = hidden_dim
         self.disc = self.create_nn()

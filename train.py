@@ -1,11 +1,11 @@
-import logging
 import datetime
-
-from call_ai_grapher.vision import Vision
-from call_ai_grapher.gans import Training
-from config import gans_config
+import logging
 
 import torch
+
+from call_ai_grapher.gans import Training
+from call_ai_grapher.vision import Vision
+from config import gans_config
 
 torch.manual_seed(0)
 

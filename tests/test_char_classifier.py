@@ -2,7 +2,12 @@ import numpy as np
 import pytest
 import torch
 
-from call_ai_grapher.models import CharCNN, load_checkpoint, save_checkpoint, train_model
+from call_ai_grapher.models import (
+    CharCNN,
+    load_checkpoint,
+    save_checkpoint,
+    train_model,
+)
 from call_ai_grapher.pipeline.classifier import CharClassifier
 from call_ai_grapher.pipeline.types import CharBox
 

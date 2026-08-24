@@ -18,7 +18,7 @@ Pipeline: `scanned page -> character detection -> character classification -> pe
 | Per-character style transfer (pix2pix / latent AE) | ⬜ | `ft/style-stylizer` |
 | Blend regulator (latent interpolation alpha) | ⬜ | `ft/blend-regulator` |
 | Document recomposer (baseline alignment) | ⬜ | `ft/document-recomposer` |
-| Gradio app (upload, slider, before/after) | ⬜ | `ft/gradio-app` |
+| Gradio app (upload, slider, before/after) | ✅ | `ft/web-ui` |
 
 Run the pipeline today (MSER detection + baseline cleanup stylizer):
 
@@ -137,6 +137,23 @@ dataset using the classifier label.
        --stylizer latent --ae-model models/char_autoencoder.pt --alphabet-dir dataset/alphabet
    ```
 
+### Web UI (Gradio)
+
+The same pipeline behind `improve_document.py` is available as a local web
+app. Upload a scanned page and the app detects and labels every character
+once; the improvement slider then re-stylizes the page instantly, comparing
+the original document (before) against the improved one (after).
+
+```
+python web_ui.py
+```
+
+Then open http://127.0.0.1:7861. The "Backends" panel mirrors the CLI flags:
+detector (`mser`/`yolo` with weights path and confidence), optional classifier
+checkpoint, and stylizer (`baseline`, `neural` or `latent` with its model
+paths and the alphabet dataset). The latent backend still requires a
+classifier so each character finds its reference glyph.
+
 ## Experiments
 
 ### Experiment 1
@@ -166,7 +183,7 @@ Same GANS model without creating a new Discriminator instance when we change the
 
 We go back to GANS of experiment 1. However, in this case, we have a vanishing gradient issue. When we change the image, The discriminator is unable to distinguish that change and is fooled by the generator. To avoid this, we can apply Wasserstein GAN with Gradient Penalty.
 
-![Experiment 4](./gif/exp_4_losses.png) 
+![Experiment 4](./gif/exp_4_losses.png)
 
 ### Experiment 5
 
@@ -176,7 +193,7 @@ Build a Wasserstein GAN with Gradient Penalty (WGAN-GP) (https://arxiv.org/abs/1
 
 We can see as the discriminator is able to reduce the losses when picture is changing, providing feedback to generator to adapt the new style. However, we continue to see a lot of noise which could be removed adding to the generator a denoising autoencoder module https://plainenglish.io/blog/denoising-autoencoder-in-pytorch-on-mnist-dataset-a76b8824e57e. We need to analyze why in step 490 the loss discriminator increase and then is constant.
 
-| Experiment | Description | Results | 
+| Experiment | Description | Results |
 | -------- | -------- | -------- |
 |  1   | GANS with two discriminators | ![Experiment 1](./gif/evol.gif)   |
 |  2   | GANS with convolution and two discriminators |![Experiment 2](./gif/exp_2.gif)   |
@@ -204,7 +221,7 @@ https://stackoverflow.com/questions/40443988/python-opencv-ocr-image-segmentatio
 
 <img src="./gif/exp_7.jpeg" alt="Experiment 7" width="500" />
 
-We can see a high level character recognition but we still seeing areas with multiple characters. Therefore, Object Detection with RNN is needed. 
+We can see a high level character recognition but we still seeing areas with multiple characters. Therefore, Object Detection with RNN is needed.
 
 ## Project Structure
 

@@ -1,7 +1,12 @@
 import argparse
 import logging
 
-from call_ai_grapher.dataset import AlphabetDatasetBuilder, DEFAULT_ALPHABET, class_counts, find_fonts
+from call_ai_grapher.dataset import (
+    DEFAULT_ALPHABET,
+    AlphabetDatasetBuilder,
+    class_counts,
+    find_fonts,
+)
 
 
 def _parse_args():

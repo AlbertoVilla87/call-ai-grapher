@@ -1,4 +1,5 @@
 import os
+
 from PIL import Image, ImageDraw, ImageFont
 
 from call_ai_grapher import ocr

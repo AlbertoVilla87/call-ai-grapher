@@ -1,8 +1,7 @@
 import cv2
 import selectivesearch
-
-from torch_snippets import *
 from skimage.segmentation import felzenszwalb
+from torch_snippets import *
 
 
 class SelectiveSearch:

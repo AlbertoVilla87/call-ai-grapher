@@ -39,6 +39,12 @@ dependencies = [
     "torch-snippets>=0.521,<0.522",
     "numpy>=1.26,<2",
     "ultralytics>=8.4.126",
+    "gradio>=4.44.1",
+    "gradio-client>=1.0,<1.4",
+    "huggingface-hub>=0.25,<1",
+    # pydantic >= 2.10 emits boolean `additionalProperties` in JSON schemas,
+    # which breaks gradio 4.x api_info introspection
+    "pydantic>=2,<2.10",
 ]
 
 [dependency-groups]

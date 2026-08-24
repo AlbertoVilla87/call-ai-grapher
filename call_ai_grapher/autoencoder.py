@@ -1,10 +1,11 @@
-import numpy as np  # this module is useful to work with numerical arrays
 import logging
-from tqdm.auto import tqdm
+
+import numpy as np  # this module is useful to work with numerical arrays
 import torch
-from torch.utils.data import DataLoader, random_split
 from tensorboardX import SummaryWriter
 from torch import nn
+from torch.utils.data import DataLoader, random_split
+from tqdm.auto import tqdm
 
 from call_ai_grapher.vision import Vision
 
@@ -15,7 +16,7 @@ class Encoder(nn.Module):
         :param encoded_space_dim: _description_
         :type encoded_space_dim: int
         """
-        super(Encoder, self).__init__()
+        super().__init__()
         self.encoded_space_dim = encoded_space_dim
         self.encoder_cnn = nn.Sequential(
             nn.Conv2d(1, 8, 3, stride=2, padding=1),
@@ -49,7 +50,7 @@ class Decoder(nn.Module):
         :param encoded_space_dim: _description_
         :type encoded_space_dim: int
         """
-        super(Decoder, self).__init__()
+        super().__init__()
         self.encoded_space_dim = encoded_space_dim
 
         self.decoder_lin = nn.Sequential(
