@@ -41,6 +41,8 @@ uv run pre-commit install
 
 Take the pipeline for a spin before training anything. Out of the box it uses MSER detection plus a simple binarization cleanup, so expect a cleaner, noise-free version of your strokes: an appetizer that proves the plumbing works, not yet the real thing.
 
+Run everything from the repository root: paths like `documents/page.jpeg` are resolved relative to where you invoke the command (uv finds the workspace even from a subfolder, but then your data paths would not match). The scanned page is yours to provide — create the `documents/` folder and drop your image in; it stays git-ignored.
+
 Web app:
 
 ```
