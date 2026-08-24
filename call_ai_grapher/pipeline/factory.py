@@ -73,7 +73,9 @@ def build_stylizer(
         from call_ai_grapher.pipeline.stylizer import LatentStylizer
 
         if not classifier_model:
-            raise ValueError("The latent stylizer requires the character classifier so each character finds its reference glyph")
+            raise ValueError(
+                "The latent stylizer requires the character classifier so each character finds its reference glyph"
+            )
         return LatentStylizer(autoencoder_model, alphabet_dir=alphabet_dir)
     from call_ai_grapher.pipeline.stylizer import Stylizer
 
