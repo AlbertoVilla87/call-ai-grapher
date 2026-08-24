@@ -37,9 +37,11 @@ Install the pre-commit hooks:
 uv run pre-commit install
 ```
 
-## 2. Quick start (no training needed)
+## 2. Quick start
 
-The easiest way in is the local web app. Upload a scanned page and use the improvement slider to compare before/after:
+Take the pipeline for a spin before training anything. Out of the box it uses MSER detection plus a simple binarization cleanup, so expect a cleaner, noise-free version of your strokes: an appetizer that proves the plumbing works, not yet the real thing.
+
+Web app:
 
 ```
 uv run ui
@@ -47,17 +49,15 @@ uv run ui
 
 Then open the URL printed in the terminal (http://127.0.0.1:7860 by default).
 
-Prefer the command line? Run the pipeline directly (MSER detection + baseline cleanup stylizer out of the box):
+Command line:
 
 ```
 uv run improve-document --input documents/page.jpeg --output documents/improved.png --alpha 0.8
 ```
 
-Everything below is optional: each step trains one model that makes the result better, and every step tells you exactly how to plug it into the command above.
+# Making it actually improve your handwriting
 
-# Training your own models
-
-Follow these steps in order; each one builds on the previous and ends with the `improve-document` flags that activate it.
+Converting poor handwriting towards a pretty style is the whole point of this project — and that needs models. Follow these steps in order; each one trains one model, builds on the previous, and ends with the exact `improve-document` flags that activate it.
 
 ## Step 1. Alphabet dataset
 
