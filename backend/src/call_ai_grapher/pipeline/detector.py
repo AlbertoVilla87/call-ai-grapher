@@ -15,7 +15,16 @@ from call_ai_grapher.pipeline.types import CharBox
 
 
 class CharacterDetector:
-    def __init__(self, scale: float = 2.0, min_area: int = 20, max_ratio: float = 2.5):
+    def __init__(
+        self,
+        scale: float = 2.0,
+        min_area: int = 120,
+        max_ratio: float = 2.5,
+        min_dim: int = 5,
+        mser_delta: int = 5,
+        mser_max_area: int = 60000,
+        mser_max_variation: float = 0.25,
+    ):
         """_summary_
         :param scale: upscale applied before running MSER
         :type scale: float
@@ -23,10 +32,23 @@ class CharacterDetector:
         :type min_area: int
         :param max_ratio: maximum width/height aspect ratio to keep
         :type max_ratio: float
+        :param min_dim: minimum width and height in source pixels, drops stroke specks
+        :type min_dim: int
+        :param mser_delta: MSER stability delta; lower values find more regions
+        :type mser_delta: int
+        :param mser_max_area: MSER region area cap in scaled pixels; raise it so large
+            characters are not silently dropped
+        :type mser_max_area: int
+        :param mser_max_variation: MSER stability threshold; higher values accept more regions
+        :type mser_max_variation: float
         """
         self.scale = scale
         self.min_area = min_area
         self.max_ratio = max_ratio
+        self.min_dim = min_dim
+        self.mser_delta = mser_delta
+        self.mser_max_area = mser_max_area
+        self.mser_max_variation = mser_max_variation
 
     def detect(self, page: np.ndarray) -> List[CharBox]:
         """Return the character boxes found in `page`, in reading order.
@@ -38,13 +60,11 @@ class CharacterDetector:
         """
         gray = self._to_gray(page)
         scaled = cv2.resize(gray, None, fx=self.scale, fy=self.scale, interpolation=cv2.INTER_CUBIC)
-        # TODO(ft/char-detector): MSER defaults cap region area at 14400 px *after* the
-        # scale=2.0 upscale, so characters bigger than ~85 px per side in the source page are
-        # silently dropped (e.g. full-resolution phone photos of a page yield zero detections).
-        # Make the area window adaptive (normalize by image size, or auto-downscale/tile large
-        # pages before MSER) and add a regression test with a big real photo such as
-        # assets/gif/exp_7.jpeg (3072x4096), which currently detects nothing.
-        regions, _ = cv2.MSER_create().detectRegions(scaled)
+        regions, _ = cv2.MSER_create(
+            delta=self.mser_delta,
+            max_area=self.mser_max_area,
+            max_variation=self.mser_max_variation,
+        ).detectRegions(scaled)
 
         boxes = []
         for region in regions:
@@ -74,7 +94,12 @@ class CharacterDetector:
         """
         area = box.width * box.height
         ratio = box.width / max(box.height, 1)
-        return area >= self.min_area and ratio <= self.max_ratio
+        return (
+            area >= self.min_area
+            and box.width >= self.min_dim
+            and box.height >= self.min_dim
+            and ratio <= self.max_ratio
+        )
 
     @staticmethod
     def _merge_duplicates(boxes: List[CharBox]) -> List[CharBox]:

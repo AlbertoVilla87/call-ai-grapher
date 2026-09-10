@@ -53,11 +53,20 @@ class RenderRequest(BaseModel):
     alpha: float
 
 
+class BoxDTO(BaseModel):
+    x: int
+    y: int
+    width: int
+    height: int
+    label: str | None = None
+
+
 class AnalyzeResponse(BaseModel):
     session_id: str
     char_count: int
     labels: list[str]
     before: str
+    boxes: list[BoxDTO]
 
 
 class RenderResponse(BaseModel):
@@ -121,6 +130,9 @@ def create_app() -> FastAPI:
         autoencoder_model: str = Form("models/char_autoencoder.pt"),
         alphabet_dir: str = Form("dataset/alphabet"),
         denoise_page: bool = Form(False),
+        mser_delta: int = Form(5),
+        mser_max_area: int = Form(60000),
+        mser_max_variation: float = Form(0.25),
     ):
         """Run detection over the uploaded page and open a rendering session.
 
@@ -156,7 +168,14 @@ def create_app() -> FastAPI:
             preprocessor = build_page_denoiser(denoise_page)
             if preprocessor is not None:
                 page = preprocessor.clean(page)
-            detector = build_detector(detector_backend, yolo_model, confidence)
+            detector = build_detector(
+                detector_backend,
+                yolo_model,
+                confidence,
+                mser_delta=mser_delta,
+                mser_max_area=mser_max_area,
+                mser_max_variation=mser_max_variation,
+            )
             classifier = build_classifier(classifier_path or None)
             stylizer = build_stylizer(
                 stylizer_backend,
@@ -183,6 +202,7 @@ def create_app() -> FastAPI:
             char_count=len(boxes),
             labels=labels[:20],
             before=_encode(page),
+            boxes=[BoxDTO(x=box.x, y=box.y, width=box.width, height=box.height, label=box.label) for box in boxes],
         )
 
     @app.post("/api/sessions/{session_id}/render", response_model=RenderResponse)

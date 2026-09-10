@@ -1,8 +1,17 @@
+export interface Box {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  label: string | null;
+}
+
 export interface AnalyzeResult {
   sessionId: string;
   charCount: number;
   labels: string[];
   before: string;
+  boxes: Box[];
 }
 
 export interface RenderResult {
@@ -20,6 +29,9 @@ export interface PipelineSettings {
   autoencoderModel: string;
   alphabetDir: string;
   denoisePage: boolean;
+  mserDelta: number;
+  mserMaxArea: number;
+  mserMaxVariation: number;
 }
 
 export const DEFAULT_SETTINGS: PipelineSettings = {
@@ -32,6 +44,9 @@ export const DEFAULT_SETTINGS: PipelineSettings = {
   autoencoderModel: "models/char_autoencoder.pt",
   alphabetDir: "dataset/alphabet",
   denoisePage: false,
+  mserDelta: 5,
+  mserMaxArea: 60000,
+  mserMaxVariation: 0.25,
 };
 
 async function unwrap<T>(response: Response): Promise<T> {
@@ -60,6 +75,9 @@ export async function analyzePage(file: File, settings: PipelineSettings): Promi
   form.append("autoencoder_model", settings.autoencoderModel);
   form.append("alphabet_dir", settings.alphabetDir);
   form.append("denoise_page", String(settings.denoisePage));
+  form.append("mser_delta", String(settings.mserDelta));
+  form.append("mser_max_area", String(settings.mserMaxArea));
+  form.append("mser_max_variation", String(settings.mserMaxVariation));
 
   const data = await unwrap<AnalyzeResponseDTO>(
     await fetch("/api/sessions", { method: "POST", body: form }),
@@ -69,6 +87,7 @@ export async function analyzePage(file: File, settings: PipelineSettings): Promi
     charCount: data.char_count,
     labels: data.labels,
     before: data.before,
+    boxes: data.boxes,
   };
 }
 
@@ -77,6 +96,7 @@ interface AnalyzeResponseDTO {
   char_count: number;
   labels: string[];
   before: string;
+  boxes: Box[];
 }
 
 interface RenderResponseDTO {

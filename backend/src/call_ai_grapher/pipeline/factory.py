@@ -6,7 +6,14 @@ a single source of truth for that wiring.
 """
 
 
-def build_detector(backend: str = "mser", model_path: str = "models/character_detector.pt", confidence: float = 0.25):
+def build_detector(
+    backend: str = "mser",
+    model_path: str = "models/character_detector.pt",
+    confidence: float = 0.25,
+    mser_delta: int = 5,
+    mser_max_area: int = 60000,
+    mser_max_variation: float = 0.25,
+):
     """Build the character detection stage.
 
     :param backend: detection backend name, "mser" or "yolo"
@@ -15,6 +22,12 @@ def build_detector(backend: str = "mser", model_path: str = "models/character_de
     :type model_path: str
     :param confidence: minimum detection confidence (backend "yolo")
     :type confidence: float
+    :param mser_delta: MSER stability delta (backend "mser")
+    :type mser_delta: int
+    :param mser_max_area: MSER region area cap in scaled pixels (backend "mser")
+    :type mser_max_area: int
+    :param mser_max_variation: MSER stability threshold (backend "mser")
+    :type mser_max_variation: float
     :return: the configured detector
     :rtype: Union[CharacterDetector, YoloCharacterDetector]
     """
@@ -24,7 +37,11 @@ def build_detector(backend: str = "mser", model_path: str = "models/character_de
         return YoloCharacterDetector(model_path, confidence=confidence)
     from call_ai_grapher.pipeline.detector import CharacterDetector
 
-    return CharacterDetector()
+    return CharacterDetector(
+        mser_delta=mser_delta,
+        mser_max_area=mser_max_area,
+        mser_max_variation=mser_max_variation,
+    )
 
 
 def build_classifier(model_path=None):

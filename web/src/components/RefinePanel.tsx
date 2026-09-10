@@ -68,6 +68,49 @@ export default function RefinePanel({
               </label>
             ))}
           </div>
+          {settings.detectorBackend === "mser" && (
+            <>
+              <label className="ledger ledger-range">
+                <span>
+                  MSER delta <b>{settings.mserDelta}</b>
+                </span>
+                <input
+                  type="range"
+                  min={1}
+                  max={10}
+                  step={1}
+                  value={settings.mserDelta}
+                  onChange={(event) => patch({ mserDelta: Number(event.target.value) })}
+                />
+                <em className="ledger-note">lower = more sensitive</em>
+              </label>
+              <label className="ledger ledger-range">
+                <span>
+                  MSER stability <b>{settings.mserMaxVariation.toFixed(2)}</b>
+                </span>
+                <input
+                  type="range"
+                  min={0.05}
+                  max={0.5}
+                  step={0.05}
+                  value={settings.mserMaxVariation}
+                  onChange={(event) => patch({ mserMaxVariation: Number(event.target.value) })}
+                />
+                <em className="ledger-note">higher = accepts more regions</em>
+              </label>
+              <label className="ledger">
+                <span>MSER region cap</span>
+                <input
+                  type="number"
+                  min={5000}
+                  step={5000}
+                  value={settings.mserMaxArea}
+                  onChange={(event) => patch({ mserMaxArea: Number(event.target.value) })}
+                />
+                <em className="ledger-note">raise to keep large characters</em>
+              </label>
+            </>
+          )}
           {settings.detectorBackend === "yolo" && (
             <>
               <label className="ledger">

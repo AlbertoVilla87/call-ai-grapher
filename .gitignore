@@ -189,3 +189,4 @@ assets/yolov8n.pt
 # Web frontend
 web/node_modules/
 web/dist/
+web/.vite/

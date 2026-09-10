@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
-import { analyzePage, DEFAULT_SETTINGS, releaseSession, renderPage, type PipelineSettings } from "./api";
+import { analyzePage, DEFAULT_SETTINGS, releaseSession, renderPage, type Box, type PipelineSettings } from "./api";
 import Header from "./components/Header";
 import ScanSheet from "./components/ScanSheet";
 import RefinePanel from "./components/RefinePanel";
@@ -11,6 +11,7 @@ interface Session {
   before: string;
   charCount: number;
   labels: string[];
+  boxes: Box[];
 }
 
 function Act({ numeral, name, children }: { numeral: string; name: string; children: ReactNode }) {
@@ -69,7 +70,7 @@ export default function App() {
         const result = await analyzePage(source, settings);
         setSession((previous) => {
           if (previous) releaseSession(previous.id);
-          return { id: result.sessionId, before: result.before, charCount: result.charCount, labels: result.labels };
+          return { id: result.sessionId, before: result.before, charCount: result.charCount, labels: result.labels, boxes: result.boxes };
         });
         setPhase("idle");
         void runRender(result.sessionId, alpha);
@@ -139,7 +140,7 @@ export default function App() {
           </div>
           <div className="desk-stage">
             <Act numeral="III" name="Compare">
-              <ComparePane before={session?.before ?? null} after={after} rendering={rendering} />
+              <ComparePane before={session?.before ?? null} after={after} boxes={session?.boxes ?? []} rendering={rendering} />
               <p className={`status status-${status.tone}`}>
                 <span className="status-mark" aria-hidden="true">
                   {status.tone === "error" ? "✕" : status.tone === "good" ? "❧" : "✒"}

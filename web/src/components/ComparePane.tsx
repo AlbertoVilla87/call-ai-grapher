@@ -1,27 +1,73 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { Box } from "../api";
 
 const A4_PORTRAIT = 210 / 297;
 
 export interface ComparePaneProps {
   before: string | null;
   after: string | null;
+  boxes: Box[];
   rendering: boolean;
 }
 
-export default function ComparePane({ before, after, rendering }: ComparePaneProps) {
+export default function ComparePane({ before, after, boxes, rendering }: ComparePaneProps) {
   const [split, setSplit] = useState(50);
   const [ratio, setRatio] = useState(A4_PORTRAIT);
+  const [natural, setNatural] = useState<{ width: number; height: number } | null>(null);
   const paneRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const draggingRef = useRef(false);
 
   useEffect(() => {
     if (!before) return;
+    setNatural(null);
     const image = new Image();
     image.onload = () => {
-      if (image.naturalWidth > 0) setRatio(image.naturalWidth / image.naturalHeight);
+      if (image.naturalWidth > 0) {
+        setRatio(image.naturalWidth / image.naturalHeight);
+        setNatural({ width: image.naturalWidth, height: image.naturalHeight });
+      }
     };
     image.src = before;
   }, [before]);
+
+  useEffect(() => {
+    const draw = () => {
+      const canvas = canvasRef.current;
+      const pane = paneRef.current;
+      if (!canvas || !pane || !natural) return;
+      const rect = pane.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.round(rect.width * dpr);
+      canvas.height = Math.round(rect.height * dpr);
+      canvas.style.width = `${rect.width}px`;
+      canvas.style.height = `${rect.height}px`;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, rect.width, rect.height);
+      if (boxes.length === 0) return;
+      const sx = rect.width / natural.width;
+      const sy = rect.height / natural.height;
+      ctx.strokeStyle = "rgba(196, 62, 40, 0.9)";
+      ctx.lineWidth = 1.5;
+      ctx.fillStyle = "rgba(196, 62, 40, 0.12)";
+      for (const box of boxes) {
+        const x = box.x * sx;
+        const y = box.y * sy;
+        const w = box.width * sx;
+        const h = box.height * sy;
+        ctx.fillRect(x, y, w, h);
+        ctx.strokeRect(x, y, w, h);
+      }
+    };
+    draw();
+    const pane = paneRef.current;
+    if (!pane) return;
+    const observer = new ResizeObserver(draw);
+    observer.observe(pane);
+    return () => observer.disconnect();
+  }, [boxes, natural]);
 
   const updateFromPointer = useCallback((clientX: number) => {
     const pane = paneRef.current;
@@ -72,6 +118,7 @@ export default function ComparePane({ before, after, rendering }: ComparePanePro
           style={{ clipPath: `inset(0 0 0 ${split}%)` }}
         />
       )}
+      <canvas ref={canvasRef} className="compare-boxes" aria-hidden="true" />
       <div
         className="compare-divider"
         style={{ left: `${split}%` }}
