@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 function CircledWord({ children }: { children: string }) {
   return (
     <span className="circled">
@@ -13,7 +15,22 @@ function CircledWord({ children }: { children: string }) {
   );
 }
 
-export default function Header() {
+export default function Header({ compact = false, children }: { compact?: boolean; children?: ReactNode }) {
+  if (compact) {
+    return (
+      <header className="strip rise">
+        <p className="brand">
+          <span className="nib" aria-hidden="true">
+            ✒
+          </span>
+          CallAIgrapher
+        </p>
+        <span className="hand strip-note">still yours.</span>
+        {children}
+      </header>
+    );
+  }
+
   return (
     <header className="masthead rise">
       <div className="masthead-top">

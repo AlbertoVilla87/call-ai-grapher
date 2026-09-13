@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { analyzePage, DEFAULT_SETTINGS, releaseSession, renderPage, type Box, type PipelineSettings } from "./api";
 import Header from "./components/Header";
-import ScanSheet from "./components/ScanSheet";
+import { PageChip, ScanHero } from "./components/ScanSheet";
 import RefinePanel from "./components/RefinePanel";
 import ComparePane from "./components/ComparePane";
 import Ambient from "./components/Ambient";
@@ -14,24 +14,27 @@ interface Session {
   boxes: Box[];
 }
 
-function Act({ numeral, name, children }: { numeral: string; name: string; children: ReactNode }) {
+function Kicker({ numeral, name }: { numeral: string; name: string }) {
   return (
-    <section className="sheet rise">
-      <p className="act-label">
-        <span className="act-numeral display">{numeral}</span>
-        <span className="act-name">{name}</span>
-        <span className="act-rule" aria-hidden="true" />
-      </p>
-      {children}
-    </section>
+    <p className="act-label">
+      <span className="act-numeral display">{numeral}</span>
+      <span className="act-name">{name}</span>
+      <span className="act-rule" aria-hidden="true" />
+    </p>
   );
 }
+
+const STATUS_MARK: Record<"quiet" | "busy" | "good" | "error", string> = {
+  quiet: "✒",
+  busy: "✒",
+  good: "❧",
+  error: "✕",
+};
 
 export default function App() {
   const [phase, setPhase] = useState<"idle" | "analyzing">("idle");
   const [error, setError] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [after, setAfter] = useState<string | null>(null);
   const [rendering, setRendering] = useState(false);
@@ -43,10 +46,9 @@ export default function App() {
 
   useEffect(() => {
     return () => {
-      if (previewUrl) URL.revokeObjectURL(previewUrl);
       window.clearTimeout(renderTimer.current);
     };
-  }, [previewUrl]);
+  }, []);
 
   const runRender = useCallback(async (sessionId: string, amount: number) => {
     const ticket = ++renderTicket.current;
@@ -85,10 +87,6 @@ export default function App() {
   const handleFile = useCallback(
     (picked: File) => {
       setFile(picked);
-      setPreviewUrl((previous) => {
-        if (previous) URL.revokeObjectURL(previous);
-        return URL.createObjectURL(picked);
-      });
       void runAnalyze(picked);
     },
     [runAnalyze],
@@ -114,46 +112,62 @@ export default function App() {
     status = { tone: "good", text: labels ? `${found} · ${labels}` : `${found} · drag the nib to compare` };
   }
 
+  if (!file) {
+    return (
+      <>
+        <Ambient />
+        <div className="frame intro">
+          <Header />
+          <main className="intro-stage">
+            <ScanHero onFile={handleFile} />
+            <p className="intro-hint hand">your letter never leaves the desk</p>
+          </main>
+          <footer className="colophon rise">
+            <span className="colophon-rule" aria-hidden="true" />
+            <p>CallAIgrapher · MSER, YOLOv8, pix2pix &amp; latent blends inside</p>
+          </footer>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <Ambient />
-      <div className="frame">
-        <Header />
+      <div className="frame working">
+        <Header compact>
+          <PageChip file={file} onFile={handleFile} />
+          <p className={`strip-status status status-${status.tone}`} role="status">
+            <span className="status-mark" aria-hidden="true">
+              {STATUS_MARK[status.tone]}
+            </span>
+            <span className="status-text">{status.text}</span>
+          </p>
+        </Header>
         <main className="desk">
           <div className="desk-rail">
-            <Act numeral="I" name="Scan">
-              <ScanSheet file={file} previewUrl={previewUrl} onFile={handleFile} />
-            </Act>
-            <Act numeral="II" name="Refine">
+            <section className="sheet rise">
+              <Kicker numeral="II" name="Refine" />
               <RefinePanel
                 settings={settings}
                 onSettings={setSettings}
                 alpha={alpha}
                 onAlpha={handleAlpha}
-                hasPage={file !== null}
+                hasPage={true}
                 busy={phase === "analyzing"}
                 onAnalyze={() => {
                   if (file) void runAnalyze(file);
                 }}
               />
-            </Act>
+            </section>
           </div>
           <div className="desk-stage">
-            <Act numeral="III" name="Compare">
+            <section className="sheet rise">
+              <Kicker numeral="III" name="Compare" />
               <ComparePane before={session?.before ?? null} after={after} boxes={session?.boxes ?? []} rendering={rendering} />
-              <p className={`status status-${status.tone}`}>
-                <span className="status-mark" aria-hidden="true">
-                  {status.tone === "error" ? "✕" : status.tone === "good" ? "❧" : "✒"}
-                </span>
-                {status.text}
-              </p>
-            </Act>
+            </section>
           </div>
         </main>
-        <footer className="colophon rise">
-          <span className="colophon-rule" aria-hidden="true" />
-          <p>CallAIgrapher · MSER, YOLOv8, pix2pix &amp; latent blends inside · your letter never leaves the desk</p>
-        </footer>
       </div>
     </>
   );
