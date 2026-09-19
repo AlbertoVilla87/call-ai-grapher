@@ -171,6 +171,26 @@ select {
   padding: clamp(20px, 4vw, 52px) clamp(18px, 4vw, 44px) 40px;
 }
 
+.frame.intro {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.frame.intro .intro-stage {
+  flex: 1;
+}
+
+.frame.working {
+  height: 100vh;
+  max-width: 1500px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: clamp(12px, 1.6vw, 20px) clamp(16px, 2.4vw, 40px);
+  animation-delay: 0s;
+}
+
 .rise {
   animation: rise 0.9s var(--ease-out) both;
 }
@@ -277,6 +297,53 @@ select {
 }
 
 /* ---------------------------------------------------------------- */
+/*  Compact strip (working desk)                                     */
+/* ---------------------------------------------------------------- */
+
+.strip {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: clamp(12px, 1.6vw, 20px);
+  padding-bottom: clamp(12px, 1.8vh, 18px);
+  margin-bottom: clamp(12px, 1.8vh, 18px);
+  border-bottom: 1px solid var(--hairline);
+  animation-delay: 0.05s;
+}
+
+.strip .brand {
+  margin: 0 auto 0 0;
+  font-size: 19px;
+}
+
+.strip .nib {
+  font-size: 15px;
+}
+
+.strip-note {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1;
+  white-space: nowrap;
+  transform: rotate(-2.5deg);
+}
+
+.strip .status {
+  margin: 0;
+  min-height: 0;
+  max-width: 44ch;
+  font-size: 17px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.status-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------- */
 /*  Desk layout + glass sheets                                       */
 /* ---------------------------------------------------------------- */
 
@@ -290,6 +357,47 @@ select {
 .desk-rail {
   display: grid;
   gap: clamp(18px, 2.6vw, 30px);
+}
+
+/*  Working desk: fit the whole viewport, no page scroll  */
+
+.frame.working .desk {
+  flex: 1;
+  min-height: 0;
+  grid-template-columns: minmax(300px, 380px) minmax(0, 1fr);
+  align-items: stretch;
+}
+
+.frame.working .desk-rail {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  gap: inherit;
+}
+
+.frame.working .desk-rail .sheet {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
+.frame.working .desk-stage {
+  min-height: 0;
+  display: grid;
+}
+
+.frame.working .desk-stage .sheet {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: clamp(14px, 1.6vw, 22px) clamp(16px, 2vw, 26px);
+}
+
+.frame.working .act-label {
+  margin-bottom: 12px;
 }
 
 .sheet {
@@ -383,43 +491,70 @@ select {
   color: var(--muted);
 }
 
-.page-thumb {
-  display: block;
-  width: 100%;
-  padding: 0;
-  border: 1px solid var(--hairline);
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.4);
-  cursor: pointer;
-  overflow: hidden;
-  transition: box-shadow 0.3s;
-}
+/*  Intro stage  */
 
-.page-thumb:hover {
-  box-shadow: 0 10px 30px -18px rgba(23, 23, 23, 0.4);
-}
-
-.page-thumb img {
-  display: block;
-  width: 100%;
-  max-height: 320px;
-  object-fit: contain;
-}
-
-.page-thumb-meta {
+.intro-stage {
   display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 9px 14px;
-  border-top: 1px solid var(--hairline);
-  font-size: 12.5px;
-  color: var(--muted);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding-top: clamp(8px, 3vw, 40px);
 }
 
-.page-thumb-name {
+.intro-stage .dropzone {
+  width: min(100%, 560px);
+  padding: clamp(48px, 9vh, 104px) clamp(26px, 4vw, 52px);
+}
+
+.intro-hint {
+  margin: 6px 0 0;
+  font-size: 19px;
+  text-align: center;
+}
+
+.page-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 340px;
+  padding: 6px 8px 6px 14px;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  background: var(--glass-hi);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.page-chip-name {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.page-chip-size {
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.page-chip-action {
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.55);
+  padding: 5px 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: border-color 0.3s, color 0.3s;
+}
+
+.page-chip-action:hover {
+  border-color: var(--gold);
+  color: var(--gold);
 }
 
 /* ---------------------------------------------------------------- */
@@ -877,36 +1012,11 @@ select {
 /*  Act III · compare                                                */
 /* ---------------------------------------------------------------- */
 
-.compare-empty {
-  min-height: 380px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  border: 1.5px dashed var(--hairline);
-  border-radius: 18px;
-  text-align: center;
-  color: var(--muted);
-}
-
-.compare-empty p {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: 21px;
-  color: var(--ink-soft);
-}
-
-.compare-empty .hand {
-  font-size: 20px;
-}
-
-.compare-empty-glyph {
-  font-size: 30px;
-  color: var(--gold);
-  opacity: 0.75;
-  margin-bottom: 10px;
-  transform: rotate(-8deg);
+.compare-stage {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  place-items: center;
 }
 
 .compare {
@@ -1083,6 +1193,36 @@ select {
   .desk-stage .sheet {
     animation-delay: 0.28s;
   }
+
+  .frame.working {
+    height: auto;
+    overflow: visible;
+  }
+
+  .frame.working .desk {
+    grid-template-columns: 1fr;
+  }
+
+  .frame.working .desk-rail .sheet {
+    overflow-y: visible;
+  }
+
+  .frame.working .desk-stage .sheet {
+    height: auto;
+  }
+
+  .frame.working .compare-stage {
+    min-height: 420px;
+  }
+
+  .strip {
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+
+  .strip .status {
+    max-width: 34ch;
+  }
 }
 
 @media (max-width: 560px) {
@@ -1096,6 +1236,15 @@ select {
 
   .sheet {
     border-radius: 20px;
+  }
+
+  .strip-note {
+    display: none;
+  }
+
+  .page-chip {
+    gap: 8px;
+    padding-left: 10px;
   }
 }
 
